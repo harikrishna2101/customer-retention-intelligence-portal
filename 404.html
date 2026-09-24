@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — Page Not Found | CRIP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { min-height: 100vh; font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center; }
+        #vanta-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+
+        .error-container {
+            position: relative; z-index: 5; text-align: center;
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 3rem 4rem;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            max-width: 520px;
+        }
+
+        .error-code {
+            font-size: 6rem; font-weight: 800; line-height: 1;
+            background: linear-gradient(135deg, #7c3aed, #4facfe, #22c55e);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .error-title {
+            font-size: 1.3rem; font-weight: 600; margin: 0.75rem 0 0.5rem;
+            color: var(--text-color);
+        }
+
+        .error-desc {
+            font-size: 0.88rem; color: var(--secondary-text); line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .error-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .error-actions a {
+            padding: 0.6rem 1.5rem; border-radius: 8px; text-decoration: none;
+            font-size: 0.85rem; font-weight: 600; transition: transform 0.2s;
+        }
+        .error-actions a:hover { transform: translateY(-2px); }
+        .btn-home { background: linear-gradient(135deg, #7c3aed, #4facfe); color: #fff; }
+        .btn-dash { background: rgba(255,255,255,0.06); color: var(--text-color); border: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+    <div id="vanta-bg"></div>
+
+    <div class="error-container">
+        <div class="error-code">404</div>
+        <div class="error-title">Page Not Found</div>
+        <p class="error-desc">The page you're looking for doesn't exist or has been moved. Let's get you back on track.</p>
+        <div class="error-actions">
+            <a href="getstarted.html" class="btn-home"><i class='bx bx-home'></i> Home</a>
+            <a href="dashboard.html" class="btn-dash"><i class='bx bx-bar-chart-square'></i> Dashboard</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

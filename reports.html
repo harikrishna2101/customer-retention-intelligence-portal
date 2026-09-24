@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - CRIP</title>
+    <meta name="description" content="View, search, filter and manage your customer database with full CRUD controls.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 3D Interactive Background Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <!-- 3D Moving Background -->
+    <div id="vanta-bg"></div>
+
+    <script>
+        var BASE_URL = "";
+
+        async function verifySession() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/auth/verify-session`, {
+                    method: "GET",
+                    credentials: "include"
+                });
+                if (!res.ok) window.location.href = "login.html";
+            } catch (err) {
+                window.location.href = "login.html";
+            }
+        }
+        verifySession();
+
+        async function handleSignOut() {
+            try {
+                await fetch(`${BASE_URL}/api/auth/logout`, { method: "POST", credentials: "include" });
+            } catch (e) { }
+            window.location.href = "login.html";
+        }
+    </script>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-left">
+            <a href="home.html" style="text-decoration:none;">
+                <div class="logo" style="display:flex; align-items:center;">
+                    <img src="logo.png" alt="CRIP" style="height: 38px;">
+                </div>
+            </a>
+        </div>
+        <div class="nav-center" style="display:flex; gap:2rem; align-items:center;">
+            <a href="home.html" class="nav-link">Home</a>
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="reports.html" class="nav-link">Reports</a>
+            <a href="grow.html" class="nav-link">Grow Corner</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+        </div>
+        <div class="nav-right">
+            <button class="theme-toggle" id="theme-toggle" title="Toggle Light/Dark Mode" style="margin-right: 1rem;">
+                <i class='bx bx-moon'></i>
+            </button>
+            <button onclick="handleSignOut()" class="cta-btn" style="padding: 0.5rem 1.2rem; font-size: 0.9rem; background: #cc3333;">Sign Out</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container" style="padding: 100px 5% 4rem; max-width: 1400px; margin: 0 auto; display:flex; flex-direction:column; gap:2rem;">
+
+        <!-- Page Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card-bg); padding:1.5rem 2rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px);">
+            <div>
+                <h1 style="font-size:1.8rem; font-weight:600;"><i class='bx bx-file' style="color:var(--risk-green); vertical-align:middle; margin-right:0.5rem;"></i>Customer Reports</h1>
+                <p style="color:var(--secondary-text); font-size:0.9rem;">Full customer database — search, filter, edit ML risk, and track retention workflow stage.</p>
+            </div>
+            <div style="display:flex; gap:1rem;">
+                <button onclick="openExportModal()" class="btn-secondary" style="padding:0.6rem 1.2rem; font-size:0.85rem;"><i class='bx bx-export'></i> Build Custom Export</button>
+            </div>
+        </div>
+
+        <!-- CRM Table Card -->
+        <div id="crm-card" style="background:var(--card-bg); padding:1.5rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px); overflow-x:auto;">
+
+            <!-- Table Header Row -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h3 style="margin:0;"><i class='bx bx-data'></i> Customer Retention Database</h3>
+                <div style="display:flex; gap:1rem; align-items:center;">
+                    <div style="position:relative;">
+                        <i class='bx bx-search' style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--secondary-text);"></i>
+                        <input type="text" id="filter-search" placeholder="Search Customer ID..." onkeyup="applyFilters()" style="padding:0.6rem 0.6rem 0.6rem 2rem; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); border-radius:6px; color:var(--text-color); font-size:0.85rem; width:220px; outline:none;">
+                    </div>
+                    <select id="filter-risk" onchange="applyFilters()" style="padding:0.6rem 1rem; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); border-radius:6px; color:var(--text-color); font-size:0.85rem; cursor:pointer; outline:none;">
+                        <option value="All" style="background:var(--bg-color);">All Risks</option>
+                        <option value="Safe" style="background:var(--bg-color);">Safe</option>
+                        <option value="Warning" style="background:var(--bg-color);">Warning</option>
+                        <option value="High Risk" style="background:var(--bg-color);">High Risk</option>
+                        <option value="New" style="background:var(--bg-color);">New</option>
+                    </select>
+                    <button class="btn-primary" onclick="openAddModal()" style="padding:0.6rem 1rem; font-size:0.85rem;"><i class='bx bx-plus' style="vertical-align:middle; margin-right:0.3rem;"></i>New Record</button>
+                </div>
+            </div>
+
+            <!-- Bulk Action Bar -->
+            <div id="bulk-action-bar" style="display:none; background:rgba(204,51,51,0.1); border:1px solid #cc3333; padding:0.8rem 1rem; border-radius:8px; margin-bottom:1rem; align-items:center; justify-content:space-between;">
+                <span style="color:var(--text-color); font-size:0.9rem;"><strong id="bulk-count">0</strong> records selected</span>
+                <button onclick="executeBulkDelete()" style="background:#cc3333; color:white; border:none; padding:0.5rem 1rem; border-radius:4px; font-size:0.85rem; cursor:pointer;"><i class='bx bx-trash'></i> Bulk Delete</button>
+            </div>
+
+            <!-- Table -->
+            <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.9rem;">
+                <thead id="crm-table-head">
+                    <tr id="crm-table-header" style="border-bottom:2px solid var(--border-color); color:var(--secondary-text);">
+                        <!-- Injected via JS -->
+                    </tr>
+                </thead>
+                <tbody id="crm-table-body">
+                    <tr><td colspan="8" style="text-align:center; padding:2rem; color:var(--secondary-text);">Loading Database...</td></tr>
+                </tbody>
+            </table>
+            
+            <div id="pagination-controls" style="display:none; margin-top:1.5rem; justify-content:space-between; align-items:center;">
+                <!-- Replaced by JS -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- XAI Modal -->
+    <div id="xai-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-color); padding:2rem; border-radius:12px; border:1px solid var(--border-color); width:100%; max-width:500px; position:relative;">
+            <h2 style="margin-bottom:1rem;"><i class='bx bx-brain' style="color:#a855f7;"></i> Explainable AI (XAI)</h2>
+            <p style="color:var(--secondary-text); font-size:0.9rem; margin-bottom:1.5rem;">The Random Forest ML model flagged this customer due to the following vectors:</p>
+            <div style="background:var(--card-bg); padding:1rem; border-radius:8px; border-left:4px solid #a855f7; margin-bottom:1rem;">
+                <strong style="color:#a855f7;">Primary Vector:</strong> <span id="xai-reason1">...</span>
+            </div>
+            <div style="background:var(--card-bg); padding:1rem; border-radius:8px; border-left:4px solid #f97316; margin-bottom:1.5rem;">
+                <strong style="color:#f97316;">Secondary Vector:</strong> <span id="xai-reason2">...</span>
+            </div>
+            <button onclick="document.getElementById('xai-modal').style.display='none'" class="btn-secondary" style="width:100%;">Acknowledge</button>
+        </div>
+    </div>
+
+    <!-- Add New Record Modal -->
+    <div id="add-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-color); padding:2rem; border-radius:12px; border:1px solid var(--border-color); width:100%; max-width:400px; position:relative;">
+            <h2 style="margin-bottom:1.5rem; font-size:1.4rem;"><i class='bx bx-plus-circle' style="color:var(--risk-green);"></i> Add New Customer</h2>
+            <button onclick="document.getElementById('add-modal').style.display='none'" style="position:absolute; top:1.5rem; right:1.5rem; background:transparent; border:none; color:var(--text-color); cursor:pointer; font-size:1.5rem;"><i class='bx bx-x'></i></button>
+            <div id="dynamic-add-inputs" style="display:flex; flex-direction:column; gap:1rem; max-height: 400px; overflow-y: auto; padding-right: 0.5rem;">
+                <!-- dynamic inputs -->
+            </div>
+            <button onclick="saveNewRecord()" class="btn-primary" style="margin-top:0.5rem; width:100%; padding:0.8rem;">Add to Database</button>
+        </div>
+    </div>
+
+    <!-- Edit Record Modal -->
+    <div id="edit-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-color); padding:2rem; border-radius:12px; border:1px solid var(--border-color); width:100%; max-width:400px; position:relative;">
+            <h2 style="margin-bottom:1.5rem; font-size:1.4rem;">Edit Record</h2>
+            <button onclick="document.getElementById('edit-modal').style.display='none'" style="position:absolute; top:1.5rem; right:1.5rem; background:transparent; border:none; color:var(--text-color); cursor:pointer; font-size:1.5rem;"><i class='bx bx-x'></i></button>
+            <input type="hidden" id="edit-id">
+            <div id="dynamic-edit-inputs" style="display:flex; flex-direction:column; gap:1rem; max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem; padding-right: 0.5rem;">
+                <!-- dynamic inputs -->
+            </div>
+            <button onclick="saveEdit()" class="btn-primary" style="width:100%; padding:0.8rem;"><i class='bx bx-save'></i> Save Changes</button>
+            <button onclick="openWhatIfSandbox()" class="btn-secondary" style="width:100%; padding:0.8rem; margin-top:0.5rem; border-color:#a855f7; color:#a855f7;"><i class='bx bx-flask'></i> Launch What-If Analytics Sandbox</button>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="export-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-color); padding:2rem; border-radius:12px; border:1px solid var(--border-color); width:100%; max-width:400px; position:relative;">
+            <h2 style="margin-bottom:1.5rem; font-size:1.4rem;"><i class='bx bx-export' style="color:var(--risk-green);"></i> Intelligent Export</h2>
+            <button onclick="document.getElementById('export-modal').style.display='none'" style="position:absolute; top:1.5rem; right:1.5rem; background:transparent; border:none; color:var(--text-color); cursor:pointer; font-size:1.5rem;"><i class='bx bx-x'></i></button>
+            <p style="color:var(--secondary-text); font-size:0.9rem; margin-bottom:1rem;">Select exact columns to export:</p>
+            <div id="export-columns-list" style="display:flex; flex-direction:column; gap:0.5rem; max-height:200px; overflow-y:auto; margin-bottom:1.5rem;">
+                <!-- Checked by JS -->
+            </div>
+            <div style="display:flex; gap:1rem;">
+                <button onclick="generateCustomExport('csv')" class="btn-secondary" style="flex:1;"><i class='bx bx-file'></i> CSV</button>
+                <button onclick="generateCustomExport('pdf')" class="btn-primary" style="flex:1;"><i class='bx bxs-file-pdf'></i> PDF</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- What-If Sandbox Modal -->
+    <div id="whatif-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(20,0,40,0.8); z-index:9999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-color); padding:2rem; border-radius:12px; border:2px solid #a855f7; width:100%; max-width:400px; position:relative; box-shadow:0 0 30px rgba(168,85,247,0.3);">
+            <h2 style="margin-bottom:0.5rem; font-size:1.4rem; color:#a855f7;"><i class='bx bx-flask'></i> Predictive Sandbox</h2>
+            <p style="color:var(--secondary-text); font-size:0.85rem; margin-bottom:1.5rem;">Modify this customer's parameters below to instantly ping the AI for a hypothetical risk score without saving it.</p>
+            <button onclick="document.getElementById('whatif-modal').style.display='none'" style="position:absolute; top:1.5rem; right:1.5rem; background:transparent; border:none; color:var(--text-color); cursor:pointer; font-size:1.5rem;"><i class='bx bx-x'></i></button>
+            <div id="whatif-inputs" style="display:flex; flex-direction:column; gap:1rem; max-height: 250px; overflow-y: auto; margin-bottom: 1rem; padding-right: 0.5rem;">
+            </div>
+            <div id="whatif-result" style="text-align:center; padding:1rem; background:var(--card-bg); border-radius:8px; display:none; margin-bottom:1rem; font-weight:600;"></div>
+            <button onclick="executeWhatIf()" id="whatif-run-btn" class="btn-primary" style="width:100%; padding:0.8rem; background:#a855f7; border:none;"><i class='bx bx-radar'></i> Predict Hypothetical Score</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="nav.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

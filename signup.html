@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account — CRIP</title>
+    <meta name="description" content="Create your free CRIP account and start predicting customer churn with AI.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { min-height: 100vh; font-family: 'Poppins', sans-serif; }
+        #vanta-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        nav { position: relative; z-index: 10; }
+
+        .auth-wrapper {
+            position: relative; z-index: 5;
+            display: flex; min-height: 100vh;
+            align-items: center; justify-content: center;
+            padding: 90px 1.5rem 3rem;
+        }
+
+        .auth-card {
+            width: 100%; max-width: 540px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px; padding: 2.5rem 2.75rem;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+        }
+
+        .auth-card-header { margin-bottom: 2rem; text-align: center; }
+        .auth-card-header h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.5px; }
+        .auth-card-header p { color: var(--secondary-text); font-size: 0.88rem; margin-top: 0.4rem; }
+
+        .trust-badge {
+            display: flex; align-items: flex-start; gap: 0.6rem;
+            background: rgba(34,197,94,0.06);
+            border: 1px solid rgba(34,197,94,0.18);
+            border-radius: 10px; padding: 0.75rem 1rem;
+            margin-bottom: 1.75rem;
+            font-size: 0.78rem; color: #86efac; line-height: 1.5;
+        }
+        .trust-badge i { flex-shrink: 0; font-size: 1rem; margin-top: 1px; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+
+        .form-field { margin-bottom: 1rem; }
+        .form-field label {
+            display: block; font-size: 0.75rem; font-weight: 600;
+            color: var(--secondary-text); margin-bottom: 0.4rem;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .input-wrap { position: relative; }
+        .input-wrap i {
+            position: absolute; left: 1rem; top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-text); font-size: 1.1rem; pointer-events: none;
+        }
+        .input-wrap input, .input-wrap select {
+            width: 100%; padding: 0.8rem 1rem 0.8rem 2.75rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color); border-radius: 10px;
+            color: var(--text-color); font-family: 'Poppins', sans-serif;
+            font-size: 0.88rem; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-wrap select { padding-left: 2.75rem; appearance: none; cursor: pointer; }
+        .input-wrap select option { background: #1a1a1a; }
+        .input-wrap input:focus, .input-wrap select:focus {
+            outline: none; border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
+        }
+
+        /* Password strength */
+        .pw-strength { margin-top: 0.45rem; }
+        .pw-bar { height: 3px; border-radius: 2px; background: var(--border-color); overflow: hidden; margin-bottom: 0.25rem; }
+        .pw-fill { height: 100%; border-radius: 2px; width: 0%; transition: width 0.3s, background 0.3s; }
+        .pw-label { font-size: 0.72rem; color: var(--secondary-text); }
+
+        .auth-submit-btn {
+            width: 100%; padding: 0.95rem;
+            background: linear-gradient(135deg, #7c3aed 0%, #4facfe 100%);
+            color: #fff; border: none; border-radius: 12px;
+            font-family: 'Poppins', sans-serif; font-size: 0.95rem; font-weight: 600;
+            cursor: pointer; margin-top: 1.25rem;
+            transition: opacity 0.2s, transform 0.1s;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .auth-submit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .auth-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .auth-divider {
+            text-align: center; margin: 1.5rem 0;
+            color: var(--secondary-text); font-size: 0.8rem; position: relative;
+        }
+        .auth-divider::before, .auth-divider::after {
+            content: ''; position: absolute; top: 50%;
+            width: 42%; height: 1px; background: var(--border-color);
+        }
+        .auth-divider::before { left: 0; }
+        .auth-divider::after { right: 0; }
+
+        .auth-footer-note {
+            text-align: center; font-size: 0.85rem; color: var(--secondary-text);
+        }
+        .auth-footer-note a { color: var(--text-color); font-weight: 600; text-decoration: none; }
+        .auth-footer-note a:hover { color: #a78bfa; }
+
+        @media (max-width: 560px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .auth-card { padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="vanta-bg"></div>
+
+    <nav>
+        <div class="nav-left">
+            <a href="getstarted.html" style="text-decoration:none;">
+                <div class="logo" style="display:flex;align-items:center;">
+                    <img src="logo.png" alt="CRIP" style="height:38px;">
+                </div>
+            </a>
+        </div>
+        <div class="nav-center"></div>
+        <div class="nav-right">
+            <a href="login.html" class="cta-btn" style="padding:0.5rem 1.2rem;font-size:0.9rem;">Log In</a>
+            <button class="theme-toggle" id="theme-toggle" title="Toggle Light/Dark Mode"><i class='bx bx-moon'></i></button>
+        </div>
+    </nav>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-card-header">
+                <h1>Create your free account</h1>
+                <p>No credit card required · Ready in 60 seconds</p>
+            </div>
+
+            <div class="trust-badge">
+                <i class='bx bx-shield-check'></i>
+                <span>Your data stays private. CRIP processes everything within your isolated workspace — nothing is shared externally.</span>
+            </div>
+
+            <form id="signupForm" autocomplete="on">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="name">Full Name</label>
+                        <div class="input-wrap">
+                            <i class='bx bx-user'></i>
+                            <input type="text" id="name" placeholder="Your full name" required autocomplete="name">
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label for="organization">Organisation</label>
+                        <div class="input-wrap">
+                            <i class='bx bx-buildings'></i>
+                            <input type="text" id="organization" placeholder="Company name" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="industry">Industry</label>
+                    <div class="input-wrap">
+                        <i class='bx bx-briefcase'></i>
+                        <select id="industry" required>
+                            <option value="">Select your industry</option>
+                            <option value="SaaS & Technology">SaaS &amp; Technology</option>
+                            <option value="Retail & E-Commerce">Retail &amp; E-Commerce</option>
+                            <option value="Financial Services">Financial Services &amp; FinTech</option>
+                            <option value="Healthcare">Healthcare &amp; MedTech</option>
+                            <option value="Telecommunications">Telecommunications</option>
+                            <option value="EdTech">Education &amp; EdTech</option>
+                            <option value="Logistics">Logistics &amp; Supply Chain</option>
+                            <option value="Insurance">Insurance</option>
+                            <option value="Hospitality">Hospitality &amp; Food Service</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Agriculture">Agriculture &amp; AgriTech</option>
+                            <option value="Media">Media &amp; Entertainment</option>
+                            <option value="Real Estate">Real Estate &amp; PropTech</option>
+                            <option value="Professional Services">Consulting &amp; Professional Services</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="email">Business Email</label>
+                    <div class="input-wrap">
+                        <i class='bx bx-envelope'></i>
+                        <input type="email" id="email" placeholder="you@company.com" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <i class='bx bx-lock-alt'></i>
+                        <input type="password" id="password" placeholder="Min. 6 characters" required autocomplete="new-password">
+                    </div>
+                    <div class="pw-strength">
+                        <div class="pw-bar"><div class="pw-fill" id="pw-fill"></div></div>
+                        <div class="pw-label" id="pw-label">Enter a password</div>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-submit-btn" id="signup-btn">
+                    <i class='bx bx-check-circle'></i> Create Free Account
+                </button>
+            </form>
+
+            <div class="auth-divider">already have an account?</div>
+            <p class="auth-footer-note"><a href="login.html">Sign in here →</a></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('password').addEventListener('input', function() {
+            const val = this.value;
+            const fill = document.getElementById('pw-fill');
+            const label = document.getElementById('pw-label');
+            let strength = 0;
+            if (val.length >= 6) strength++;
+            if (/[A-Z]/.test(val)) strength++;
+            if (/[0-9]/.test(val)) strength++;
+            if (/[^A-Za-z0-9]/.test(val)) strength++;
+            const levels = [
+                { w: '0%', color: 'transparent', text: 'Enter a password' },
+                { w: '25%', color: '#ef4444', text: 'Weak' },
+                { w: '50%', color: '#f59e0b', text: 'Fair' },
+                { w: '75%', color: '#4facfe', text: 'Good' },
+                { w: '100%', color: '#22c55e', text: 'Strong ✓' },
+            ];
+            const l = levels[strength];
+            fill.style.width = l.w;
+            fill.style.background = l.color;
+            label.textContent = l.text;
+            label.style.color = l.color || 'var(--secondary-text)';
+        });
+    </script>
+</body>
+</html>

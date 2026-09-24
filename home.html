@@ -1,0 +1,1492 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - CRIP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 3D Interactive Background Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <style>
+        /* ── Home Page Specific Styles ── */
+
+        .home-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            padding: 100px 5% 4rem;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* Greeting Banner */
+        .greeting-banner {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            animation: fadeSlideUp 0.5s ease both;
+        }
+
+        [data-theme='dark'] .greeting-banner {
+            background: rgba(15, 15, 15, 0.75);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .greeting-left h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            letter-spacing: -0.5px;
+        }
+
+        .greeting-left h1 span {
+            color: var(--secondary-text);
+        }
+
+        .greeting-left .org-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.3rem 1rem;
+            font-size: 0.85rem;
+            color: var(--secondary-text);
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .greeting-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        .time-display {
+            text-align: right;
+        }
+
+        .time-display .time {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .time-display .date {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+            margin-top: 0.2rem;
+        }
+
+        /* Stat Cards Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            animation: fadeSlideUp 0.5s ease 0.1s both;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: default;
+        }
+
+        [data-theme='dark'] .stat-card {
+            background: rgba(15, 15, 15, 0.75);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme='dark'] .stat-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1.4rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-icon.blue {
+            color: var(--risk-blue);
+            background: rgba(0, 85, 255, 0.07);
+            border-color: rgba(0, 85, 255, 0.15);
+        }
+
+        .stat-icon.green {
+            color: var(--risk-green);
+            background: rgba(0, 179, 65, 0.07);
+            border-color: rgba(0, 179, 65, 0.15);
+        }
+
+        .stat-icon.yellow {
+            color: var(--risk-yellow);
+            background: rgba(242, 186, 0, 0.07);
+            border-color: rgba(242, 186, 0, 0.15);
+        }
+
+        .stat-icon.red {
+            color: var(--risk-red);
+            background: rgba(255, 51, 51, 0.07);
+            border-color: rgba(255, 51, 51, 0.15);
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .stat-card .stat-sub {
+            font-size: 0.78rem;
+            color: var(--secondary-text);
+        }
+
+        /* Main content grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 1.5rem;
+            animation: fadeSlideUp 0.5s ease 0.2s both;
+        }
+
+        /* Upload Card */
+        .upload-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        [data-theme='dark'] .upload-card {
+            background: rgba(15, 15, 15, 0.75);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-header .card-badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.2rem 0.7rem;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            color: var(--secondary-text);
+        }
+
+        /* Drop zone */
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            text-align: center;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragging {
+            border-color: var(--text-color);
+            background: var(--hover-bg);
+        }
+
+        .drop-zone i {
+            font-size: 2.5rem;
+            color: var(--secondary-text);
+        }
+
+        .drop-zone .dz-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .drop-zone .dz-sub {
+            font-size: 0.85rem;
+            color: var(--secondary-text);
+        }
+
+        .drop-zone input[type="file"] {
+            display: none;
+        }
+
+        /* File info strip */
+        .file-info {
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+        }
+
+        .file-info.visible {
+            display: flex;
+        }
+
+        .file-info i {
+            font-size: 1.5rem;
+            color: var(--risk-green);
+        }
+
+        .file-info .file-name {
+            font-weight: 500;
+            font-size: 0.95rem;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-info .file-size {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
+
+        .file-info .remove-btn {
+            background: none;
+            border: none;
+            color: var(--secondary-text);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+            transition: color 0.2s;
+        }
+
+        .file-info .remove-btn:hover {
+            color: var(--risk-red);
+        }
+
+        /* Upload actions */
+        .upload-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 0.9rem;
+            background: var(--text-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.85;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            padding: 0.9rem 1.5rem;
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--hover-bg);
+            transform: translateY(-1px);
+        }
+
+        /* Progress bar */
+        .upload-progress {
+            display: none;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .upload-progress.visible {
+            display: flex;
+        }
+
+        .progress-bar-track {
+            width: 100%;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--text-color);
+            border-radius: 99px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-label {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
+
+        /* Right sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Quick actions */
+        .quick-actions {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        [data-theme='dark'] .quick-actions {
+            background: rgba(15, 15, 15, 0.75);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .quick-actions h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.9rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.15s;
+            text-align: left;
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            background: var(--hover-bg);
+            transform: translateX(4px);
+        }
+
+        .action-btn i {
+            font-size: 1.3rem;
+            width: 28px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .action-btn .action-text {
+            flex: 1;
+        }
+
+        .action-btn .action-text small {
+            display: block;
+            color: var(--secondary-text);
+            font-size: 0.75rem;
+            font-weight: 400;
+        }
+
+        .action-btn .action-arrow {
+            color: var(--secondary-text);
+            font-size: 1rem;
+        }
+
+        /* Risk legend */
+        .risk-legend {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        [data-theme='dark'] .risk-legend {
+            background: rgba(15, 15, 15, 0.75);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .risk-legend h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.88rem;
+        }
+
+        .legend-item:last-child {
+            border-bottom: none;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-item .legend-label {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .legend-item .legend-count {
+            font-weight: 600;
+        }
+
+        /* Recent activity */
+        .activity-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            animation: fadeSlideUp 0.5s ease 0.3s both;
+        }
+
+        [data-theme='dark'] .activity-card {
+            background: rgba(15, 15, 15, 0.75);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .activity-card h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .activity-body {
+            flex: 1;
+        }
+
+        .activity-body .act-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.15rem;
+        }
+
+        .activity-body .act-sub {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--secondary-text);
+            flex-shrink: 0;
+            margin-top: 0.15rem;
+        }
+
+        /* Empty state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 2rem;
+            color: var(--secondary-text);
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            opacity: 0.4;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--text-color);
+            color: var(--bg-color);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            max-width: 340px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: var(--risk-red);
+            color: #fff;
+        }
+
+        .toast.success {
+            background: var(--risk-green);
+            color: #fff;
+        }
+
+        /* Animations */
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .quick-actions,
+            .risk-legend {
+                flex: 1;
+                min-width: 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .greeting-banner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .upload-actions {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .home-container {
+                padding: 90px 4% 3rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 3D Moving Background Container -->
+    <div id="vanta-bg"></div>
+
+    <!-- Alert Toast (Success/Error) -->
+    <script>
+        var BASE_URL = "";
+
+        async function verifySession() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/auth/verify-session`, {
+                    method: "GET",
+                    credentials: "include"
+                });
+                if (!res.ok) {
+                    window.location.href = "login.html";
+                    return null;
+                }
+                const data = await res.json();
+                return data.user;
+            } catch (err) {
+                window.location.href = "login.html";
+            }
+        }
+
+        async function handleSignOut() {
+            try {
+                await fetch(`${BASE_URL}/api/auth/logout`, { method: "POST", credentials: "include" });
+            } catch (e) {}
+            window.location.href = "login.html";
+        }
+    </script>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-left">
+            <a href="home.html" style="text-decoration:none;">
+                <div class="logo" style="display:flex; align-items:center;">
+                    <img src="logo.png" alt="CRIP" style="height: 38px;">
+                </div>
+            </a>
+        </div>
+        <div class="nav-center" style="display:flex; gap:2rem; align-items:center;">
+            <a href="home.html" class="nav-link">Home</a>
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="reports.html" class="nav-link">Reports</a>
+            <a href="grow.html" class="nav-link">Grow Corner</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+        </div>
+        <div class="nav-right">
+            <button class="theme-toggle" id="theme-toggle" title="Toggle Light/Dark Mode">
+                <i class="bx bx-moon"></i>
+            </button>
+            <button onclick="handleSignOut()" class="cta-btn" style="padding:0.5rem 1.2rem; font-size:0.9rem; background:#cc3333; border:none; cursor:pointer;">Sign Out</button>
+        </div>
+    </nav>
+    <script>
+        var ddBtn = document.querySelector('.nav-dropdown-btn');
+        var ddMenu = document.querySelector('.nav-dropdown-menu');
+        if (ddBtn && ddMenu) {
+            ddBtn.addEventListener('click', function(e) { e.stopPropagation(); ddMenu.style.display = ddMenu.style.display === 'block' ? 'none' : 'block'; });
+            document.addEventListener('click', function() { ddMenu.style.display = 'none'; });
+            ddMenu.querySelectorAll('a').forEach(function(a) {
+                a.addEventListener('mouseenter', function() { a.style.background = 'var(--hover-bg)'; });
+                a.addEventListener('mouseleave', function() { a.style.background = 'transparent'; });
+            });
+        }
+    </script>
+
+    <!-- Main -->
+    <div class="home-container">
+
+        <!-- Greeting Banner -->
+        <div class="greeting-banner">
+            <div class="greeting-left">
+                <h1 id="greeting-text">Good morning, <span id="user-name">...</span> 👋</h1>
+                <div class="org-tag">
+                    <i class='bx bx-buildings' style="font-size:1rem;"></i>
+                    <span id="org-name">Loading...</span>
+                    &nbsp;·&nbsp;
+                    <i class='bx bx-category' style="font-size:1rem;"></i>
+                    <span id="industry-name">—</span>
+                </div>
+            </div>
+            <div class="greeting-right">
+                <div class="time-display">
+                    <div class="time" id="live-time">--:--</div>
+                    <div class="date" id="live-date">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class='bx bx-group'></i></div>
+                <div class="stat-label">Total Customers</div>
+                <div class="stat-value" id="stat-total">—</div>
+                <div class="stat-sub">Across all records</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green"><i class='bx bx-check-shield'></i></div>
+                <div class="stat-label">Stable</div>
+                <div class="stat-value" id="stat-green">—</div>
+                <div class="stat-sub">No churn risk</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon yellow"><i class='bx bx-error'></i></div>
+                <div class="stat-label">Warning</div>
+                <div class="stat-value" id="stat-yellow">—</div>
+                <div class="stat-sub">Potential churn</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon red"><i class='bx bx-x-circle'></i></div>
+                <div class="stat-label">High Risk</div>
+                <div class="stat-value" id="stat-red">—</div>
+                <div class="stat-sub">Immediate action needed</div>
+            </div>
+        </div>
+
+        <!-- Main Grid: Upload + Sidebar -->
+        <div class="main-grid">
+
+            <!-- Upload Card -->
+            <div class="upload-card">
+                <div class="card-header">
+                    <h2 id="upload-card-title"><i class='bx bx-cloud-upload' style="margin-right:0.5rem;"></i>Upload Customer Data</h2>
+                    <span class="card-badge">CSV only</span>
+                </div>
+
+                <!-- Existing Data Summary (shown only when user already has data) -->
+                <div id="existing-data-summary" style="display:none; background:var(--hover-bg); border:1px solid var(--border-color); border-radius:8px; padding:1rem 1.2rem; margin-bottom:1rem; font-size:0.85rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <span style="color:var(--secondary-text);"><i class='bx bx-data' style="margin-right:0.3rem;"></i>Current dataset in database:</span>
+                        <a href="dashboard.html" style="color:var(--text-color); font-size:0.8rem; text-decoration:underline;">View full table →</a>
+                    </div>
+                    <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+                        <span><strong id="sum-total">—</strong> total records</span>
+                        <span style="color:var(--risk-green);">●&nbsp;<strong id="sum-safe">—</strong> safe</span>
+                        <span style="color:var(--risk-yellow);">●&nbsp;<strong id="sum-warn">—</strong> warning</span>
+                        <span style="color:var(--risk-red);">●&nbsp;<strong id="sum-risk">—</strong> high risk</span>
+                    </div>
+                    <p style="margin-top:0.6rem; color:var(--secondary-text); font-size:0.78rem;"><i class='bx bx-info-circle'></i> Uploading a new CSV will <strong>add</strong> records to your existing dataset.</p>
+                </div>
+
+                <!-- Drop zone -->
+                <div class="drop-zone" id="drop-zone">
+                    <input type="file" id="csv-input" accept=".csv">
+                    <i class='bx bx-spreadsheet'></i>
+                    <div class="dz-title">Drop your CSV file here</div>
+                    <div class="dz-sub">or <span style="text-decoration:underline; cursor:pointer;"
+                            onclick="document.getElementById('csv-input').click()">browse to upload</span></div>
+                    <div class="dz-sub" style="font-size:0.75rem; opacity:0.6;">Max file size: 10MB</div>
+                </div>
+
+                <!-- File info strip (shown after file selected) -->
+                <div class="file-info" id="file-info">
+                    <i class='bx bx-file-blank'></i>
+                    <div>
+                        <div class="file-name" id="file-name">filename.csv</div>
+                        <div class="file-size" id="file-size">0 KB</div>
+                    </div>
+                    <button class="remove-btn" onclick="clearFile()" title="Remove file"><i
+                            class='bx bx-x'></i></button>
+                </div>
+
+                <!-- Progress bar (shown during upload) -->
+                <div class="upload-progress" id="upload-progress">
+                    <div class="progress-bar-track">
+                        <div class="progress-bar-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-label" id="progress-label">Uploading...</div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="upload-actions">
+                    <button class="btn-primary" id="upload-btn" onclick="handleUpload()" disabled>
+                        <i class='bx bx-upload'></i> Run AI Analysis
+                    </button>
+                    <button class="btn-secondary" onclick="window.location.href='dashboard.html'">
+                        <i class='bx bx-table'></i> View Data
+                    </button>
+                    <button class="btn-secondary" onclick="loadDemoMode()" style="background:rgba(124,58,237,0.15); border-color:rgba(124,58,237,0.4); color:#a78bfa;" title="Explore with sample data">
+                        <i class='bx bx-planet'></i> Try Demo
+                    </button>
+                </div>
+
+                <!-- Google Sheets Import -->
+                <div style="margin-top:1rem; padding:1rem; background:rgba(255,255,255,0.03); border-radius:8px; border:1px dashed var(--border-color);">
+                    <div style="font-size:0.8rem; color:var(--secondary-text); margin-bottom:0.5rem;"><i class='bx bx-table' style="color:#34a853;"></i> Import from Google Sheets</div>
+                    <div style="display:flex; gap:0.5rem;">
+                        <input type="url" id="sheets-url-input" placeholder="Paste your Google Sheets URL here..." style="flex:1; padding:0.5rem 0.8rem; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); border-radius:6px; color:var(--text-color); font-size:0.85rem;">
+                        <button onclick="importFromSheets()" class="btn-secondary" style="padding:0.5rem 1rem; font-size:0.85rem; white-space:nowrap;">
+                            <i class='bx bx-import'></i> Import
+                        </button>
+                    </div>
+                    <div style="font-size:0.72rem; color:var(--secondary-text); margin-top:0.4rem; opacity:0.7;">Sheet must be shared as "Anyone with the link can view"</div>
+                </div>
+
+                <!-- Info note — updated dynamically by home.html JS -->
+                <div id="upload-status-banner" style="margin-top:0.5rem;">
+                    <h3 style="font-size:1.4rem; font-weight:600; margin-bottom:0.5rem;"><i class='bx bx-loader-alt bx-spin' style="color:var(--risk-blue)"></i> Loading your workspace...</h3>
+                    <p style="font-size:0.8rem; color:var(--secondary-text); line-height:1.6;">
+                        <i class='bx bx-info-circle' style="vertical-align:middle; margin-right:0.3rem;"></i>
+                        CRIP supports <strong>Any Generic Dataset</strong>. Simply upload your CSV, and our AI will automatically detect features and anomalies.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h2>Quick Actions</h2>
+
+                    <a href="dashboard.html" class="action-btn">
+                        <i class='bx bx-bar-chart-alt-2' style="color:var(--risk-blue);"></i>
+                        <span class="action-text">
+                            View Dashboard
+                            <small>Charts & analytics</small>
+                        </span>
+                        <i class='bx bx-chevron-right action-arrow'></i>
+                    </a>
+
+                    <a href="dashboard.html" class="action-btn">
+                        <i class='bx bx-table' style="color:var(--risk-green);"></i>
+                        <span class="action-text">
+                            My Data
+                            <small>Customer records & reports</small>
+                        </span>
+                        <i class='bx bx-chevron-right action-arrow'></i>
+                    </a>
+
+                    <a href="grow.html" class="action-btn">
+                        <i class='bx bx-chat' style="color:var(--risk-yellow);"></i>
+                        <span class="action-text">
+                            Grow Corner
+                            <small>AI retention suggestions</small>
+                        </span>
+                        <i class='bx bx-chevron-right action-arrow'></i>
+                    </a>
+
+                    <a href="contact.html" class="action-btn">
+                        <i class='bx bx-support' style="color:var(--risk-red);"></i>
+                        <span class="action-text">
+                            Contact Support
+                            <small>Get help from our team</small>
+                        </span>
+                        <i class='bx bx-chevron-right action-arrow'></i>
+                    </a>
+                </div>
+
+                <!-- Risk Legend -->
+                <div class="risk-legend">
+                    <h2>Risk Levels</h2>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:var(--risk-blue);"></div>
+                        <span class="legend-label">New Account</span>
+                        <span class="legend-count" id="leg-blue" style="color:var(--risk-blue);">—</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:var(--risk-green);"></div>
+                        <span class="legend-label">Stable / Safe</span>
+                        <span class="legend-count" id="leg-green" style="color:var(--risk-green);">—</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:var(--risk-yellow);"></div>
+                        <span class="legend-label">Warning</span>
+                        <span class="legend-count" id="leg-yellow" style="color:var(--risk-yellow);">—</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:var(--risk-red);"></div>
+                        <span class="legend-label">High Risk</span>
+                        <span class="legend-count" id="leg-red" style="color:var(--risk-red);">—</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="activity-card">
+            <h2><i class='bx bx-history' style="margin-right:0.5rem;"></i>Recent Activity</h2>
+            <div class="activity-list" id="activity-list">
+                <div class="empty-state">
+                    <i class='bx bx-data'></i>
+                    <p>No activity yet. Upload your first dataset to get started.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <i class='bx bx-check-circle'></i>
+        <span id="toast-msg">Done!</span>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="nav.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // ── Utility: Toast ──
+        function showToast(msg, type = 'default') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            toast.className = `toast ${type}`;
+            toastMsg.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        // ── Live Clock ──
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('live-time').textContent =
+                now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('live-date').textContent =
+                now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // ── Greeting based on time ──
+        function getGreeting() {
+            const h = new Date().getHours();
+            if (h < 12) return 'Good morning';
+            if (h < 17) return 'Good afternoon';
+            return 'Good evening';
+        }
+
+        // ── Load user info from session ──
+        async function loadUser() {
+            const user = await verifySession();
+            if (!user) return;
+
+            document.getElementById('greeting-text').innerHTML =
+                `${getGreeting()}, <span id="user-name">${user.name || 'Admin'}</span> 👋`;
+
+            // Try to get extra info (organization, industry) from DB
+            try {
+                const res = await fetch(`${BASE_URL}/api/auth/me`, { credentials: 'include' });
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('org-name').textContent = data.organization || 'Your Organization';
+                    document.getElementById('industry-name').textContent = data.industry || '—';
+                }
+            } catch (e) {
+                document.getElementById('org-name').textContent = 'Your Organization';
+            }
+
+            loadStats();
+            loadActivity();
+        }
+
+        // ── Load stats from Real Database backend ──
+        async function loadStats() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/data/stats`, { credentials: 'include' });
+                if (!res.ok) return;
+                const stats = await res.json();
+                if (stats.success) {
+                    document.getElementById('stat-total').textContent = stats.total ?? '—';
+                    document.getElementById('stat-green').textContent = stats.green ?? '—';
+                    document.getElementById('stat-yellow').textContent = stats.yellow ?? '—';
+                    document.getElementById('stat-red').textContent = stats.red ?? '—';
+                    document.getElementById('leg-blue').textContent = stats.blue ?? '—';
+                    document.getElementById('leg-green').textContent = stats.green ?? '—';
+                    document.getElementById('leg-yellow').textContent = stats.yellow ?? '—';
+                    document.getElementById('leg-red').textContent = stats.red ?? '—';
+
+                    // ── Context-aware upload card ──
+                    const banner = document.getElementById('upload-status-banner');
+                    if (stats.total > 0) {
+                        // User already has data — switch to "Upload New Data" mode
+                        document.getElementById('upload-card-title').innerHTML =
+                            "<i class='bx bx-cloud-upload' style='margin-right:0.5rem;'></i>Upload New Data";
+
+                        // Populate summary strip
+                        document.getElementById('sum-total').textContent = stats.total;
+                        document.getElementById('sum-safe').textContent  = stats.green;
+                        document.getElementById('sum-warn').textContent  = stats.yellow;
+                        document.getElementById('sum-risk').textContent  = stats.red;
+
+                        // Reveal the summary strip
+                        document.getElementById('existing-data-summary').style.display = 'block';
+
+                        // Update banner to show active data state
+                        if (banner) banner.innerHTML = `
+                            <h3 style="font-size:1.4rem; font-weight:600; margin-bottom:0.5rem;">
+                                <i class='bx bx-check-circle' style="color:var(--risk-green)"></i> 
+                                ${stats.total.toLocaleString()} customers loaded &amp; active.
+                            </h3>
+                            <p style="font-size:0.8rem; color:var(--secondary-text); line-height:1.6;">
+                                <i class='bx bx-info-circle' style="vertical-align:middle; margin-right:0.3rem;"></i>
+                                Upload a new CSV below to add more records. Existing data is preserved unless you choose to overwrite.
+                            </p>`;
+                    } else {
+                        // No data yet — show first-time welcome
+                        if (banner) banner.innerHTML = `
+                            <h3 style="font-size:1.4rem; font-weight:600; margin-bottom:0.5rem;">
+                                <i class='bx bx-user' style="color:var(--risk-green)"></i> Welcome! Your dashboard is empty.
+                            </h3>
+                            <p style="font-size:0.8rem; color:var(--secondary-text); line-height:1.6;">
+                                <i class='bx bx-info-circle' style="vertical-align:middle; margin-right:0.3rem;"></i>
+                                CRIP supports <strong>Any Generic Dataset</strong>. Simply upload your CSV, and our AI will automatically detect features and anomalies.
+                            </p>`;
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load stats", err);
+            }
+        }
+
+        // ── Load activity from Live Database ──
+        async function loadActivity() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/data/activity`, { credentials: 'include' });
+                if (!res.ok) return;
+                const data = await res.json();
+                
+                const list = document.getElementById('activity-list');
+                if (!data.success || data.activities.length === 0) return;
+
+                list.innerHTML = data.activities.slice(0, 5).map(act => {
+                    const timeStr = new Date(act.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    return `
+                        <div class="activity-item">
+                            <div class="activity-icon" style="color:${act.color || 'var(--text-color)'}; border-color:${act.color || 'var(--border-color)'}20;">
+                                <i class='bx ${act.icon || 'bx-info-circle'}'></i>
+                            </div>
+                            <div class="activity-body">
+                                <div class="act-title">${act.title}</div>
+                                <div class="act-sub">${act.sub}</div>
+                            </div>
+                            <div class="activity-time">${timeStr}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Failed to load activity", err);
+            }
+        }
+
+        // ── Drag & Drop ──
+        const dropZone = document.getElementById('drop-zone');
+        const csvInput = document.getElementById('csv-input');
+
+        dropZone.addEventListener('click', () => csvInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragging');
+        });
+
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragging'));
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragging');
+            const file = e.dataTransfer.files[0];
+            if (file) setFile(file);
+        });
+
+        csvInput.addEventListener('change', () => {
+            if (csvInput.files[0]) setFile(csvInput.files[0]);
+        });
+
+        let selectedFile = null;
+
+        function waitForUploadCompletion(fill, label) {
+            if (typeof io === 'undefined') {
+                return {
+                    promise: Promise.resolve({ totalProcessed: null }),
+                    cancel: () => {}
+                };
+            }
+
+            const socket = io();
+            let settled = false;
+            let lastProcessed = 0;
+            let onProgress, onComplete, onError;
+
+            const cleanup = () => {
+                socket.off('uploadProgress', onProgress);
+                socket.off('uploadComplete', onComplete);
+                socket.off('uploadError', onError);
+                socket.disconnect();
+            };
+
+            const promise = new Promise((resolve, reject) => {
+                onProgress = (data) => {
+                    lastProcessed = data.totalProcessed || lastProcessed;
+                    fill.style.width = '90%';
+                    label.textContent = `Analysing CSV... ${lastProcessed.toLocaleString()} records saved`;
+                };
+                onComplete = (data) => {
+                    settled = true;
+                    cleanup();
+                    resolve(data || { totalProcessed: lastProcessed });
+                };
+                onError = (data) => {
+                    settled = true;
+                    cleanup();
+                    reject(new Error(data?.message || 'CSV analysis failed.'));
+                };
+
+                socket.on('uploadProgress', onProgress);
+                socket.once('uploadComplete', onComplete);
+                socket.once('uploadError', onError);
+            });
+
+            return {
+                promise,
+                cancel: () => {
+                    if (!settled) cleanup();
+                }
+            };
+        }
+
+        function setFile(file) {
+            if (!file.name.endsWith('.csv')) {
+                showToast('Please upload a CSV file only.', 'error');
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('File too large. Max size is 10MB.', 'error');
+                return;
+            }
+            selectedFile = file;
+            document.getElementById('file-name').textContent = file.name;
+            document.getElementById('file-size').textContent = (file.size / 1024).toFixed(1) + ' KB';
+            document.getElementById('file-info').classList.add('visible');
+            document.getElementById('upload-btn').disabled = false;
+            dropZone.style.display = 'none';
+        }
+
+        function clearFile() {
+            selectedFile = null;
+            csvInput.value = '';
+            document.getElementById('file-info').classList.remove('visible');
+            document.getElementById('upload-btn').disabled = true;
+            dropZone.style.display = 'flex';
+        }
+
+        // ── Upload Handler ──
+        async function handleUpload() {
+            if (!selectedFile) return;
+
+            const btn = document.getElementById('upload-btn');
+            const progress = document.getElementById('upload-progress');
+            const fill = document.getElementById('progress-fill');
+            const label = document.getElementById('progress-label');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Analysing...';
+            progress.classList.add('visible');
+
+            // Simulate progress bar visually
+            let pct = 0;
+            const interval = setInterval(() => {
+                pct += Math.random() * 15;
+                if (pct >= 85) pct = 85; 
+                fill.style.width = pct + '%';
+                label.textContent = `Processing & Uploading... ${Math.round(pct)}%`;
+            }, 200);
+
+            const fileName = selectedFile.name;
+            const uploadWatcher = waitForUploadCompletion(fill, label);
+
+            try {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                const res = await fetch(`${BASE_URL}/api/data/upload`, { 
+                    method: 'POST', 
+                    body: formData, 
+                    credentials: 'include' 
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    label.textContent = 'Upload received. Running analysis...';
+                    const completed = await uploadWatcher.promise;
+                    clearInterval(interval);
+                    fill.style.width = '100%';
+                    label.textContent = 'Analysis complete!';
+                    
+                    // The backend automatically logs the activity to MongoDB using the Async Queue
+                    // Just reload the dashboard dynamically
+                    loadStats();
+                    loadActivity();
+
+                    setTimeout(() => {
+                        progress.classList.remove('visible');
+                        fill.style.width = '0%';
+                        btn.innerHTML = '<i class="bx bx-check"></i> Done!';
+                        const saved = completed.totalProcessed != null ? ` (${completed.totalProcessed.toLocaleString()} records)` : '';
+                        showToast(`${fileName} imported successfully${saved}!`, 'success');
+
+                        setTimeout(() => {
+                            btn.innerHTML = '<i class="bx bx-upload"></i> Run AI Analysis';
+                            clearFile();
+                        }, 2000);
+                    }, 500);
+                } else {
+                    throw new Error(data.message || 'Upload failed');
+                }
+            } catch (err) {
+                clearInterval(interval);
+                uploadWatcher.cancel();
+                fill.style.width = '100%';
+                fill.style.background = 'var(--risk-red)';
+                label.textContent = 'Error during upload';
+                btn.innerHTML = 'Upload Failed';
+                showToast(err.message, 'error');
+                
+                setTimeout(() => {
+                    progress.classList.remove('visible');
+                    fill.style.width = '0%';
+                    fill.style.background = 'var(--text-color)';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bx bx-upload"></i> Run AI Analysis';
+                }, 3000);
+            }
+        }
+
+        // ── Onboarding Wizard ──
+        async function checkOnboarding() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/data/me`, { credentials: 'include' });
+                const data = await res.json();
+                if (data.success && !data.user.onboardingCompleted) {
+                    showOnboardingWizard();
+                }
+            } catch(e) {}
+        }
+
+        function showOnboardingWizard() {
+            const modal = document.getElementById('onboarding-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function nextOnboardingStep(step) {
+            document.querySelectorAll('.onboarding-step').forEach((s, i) => {
+                s.style.display = i === step - 1 ? 'block' : 'none';
+            });
+            // Update dots
+            document.querySelectorAll('.ob-dot').forEach((d, i) => {
+                d.style.background = i < step ? 'var(--risk-blue)' : 'rgba(255,255,255,0.2)';
+            });
+        }
+
+        async function finishOnboarding() {
+            await fetch(`${BASE_URL}/api/data/me`, {
+                method: 'PUT', credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ onboardingCompleted: true })
+            });
+            document.getElementById('onboarding-modal').style.display = 'none';
+        }
+
+        // ── Demo Mode ──
+        async function loadDemoMode() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/data/demo`, { credentials: 'include' });
+                const data = await res.json();
+                if (!data.success) return;
+
+                showToast('Demo mode loaded — showing sample customer intelligence data!', 'success');
+
+                // Update banner to show demo state
+                const banner = document.getElementById('upload-status-banner');
+                if (banner) banner.innerHTML = `
+                    <h3 style="font-size:1.3rem; font-weight:600; margin-bottom:0.4rem;">
+                        <i class='bx bx-planet' style="color:#a78bfa"></i> Demo Mode Active
+                    </h3>
+                    <p style="font-size:0.8rem; color:var(--secondary-text);">
+                        Showing 5 sample records. Upload your own CSV to see real intelligence.
+                    </p>`;
+
+                // Navigate to dashboard with demo data visible
+                setTimeout(() => window.location.href = 'dashboard.html', 1000);
+            } catch(e) {
+                showToast('Failed to load demo data.', 'error');
+            }
+        }
+
+        // ── Google Sheets Import ──
+        async function importFromSheets() {
+            const url = document.getElementById('sheets-url-input').value.trim();
+            if (!url) return showToast('Please paste a Google Sheets URL first.', 'error');
+
+            const btn = document.querySelector('[onclick="importFromSheets()"]');
+            btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Importing...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${BASE_URL}/api/data/import-sheets`, {
+                    method: 'POST', credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sheetsUrl: url })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('Google Sheet imported successfully!', 'success');
+                    loadStats();
+                    loadActivity();
+                } else {
+                    showToast(data.message || 'Import failed.', 'error');
+                }
+            } catch(e) {
+                showToast('Failed to reach server.', 'error');
+            } finally {
+                btn.innerHTML = '<i class="bx bx-import"></i> Import';
+                btn.disabled = false;
+            }
+        }
+
+        // ── Init ──
+        loadUser();
+        checkOnboarding();
+    </script>
+
+    <!-- Onboarding Wizard Modal -->
+    <div id="onboarding-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:9999; justify-content:center; align-items:center;">
+        <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:20px; padding:2.5rem; max-width:520px; width:90%; position:relative;">
+            <!-- Step dots -->
+            <div style="display:flex; gap:8px; justify-content:center; margin-bottom:2rem;">
+                <div class="ob-dot" style="width:8px;height:8px;border-radius:50%;background:var(--risk-blue);transition:background 0.3s;"></div>
+                <div class="ob-dot" style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);transition:background 0.3s;"></div>
+                <div class="ob-dot" style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);transition:background 0.3s;"></div>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="onboarding-step" style="display:block; text-align:center;">
+                <div style="font-size:3rem; margin-bottom:1rem;">🧠</div>
+                <h2 style="font-size:1.5rem; font-weight:700; margin-bottom:0.75rem;">Welcome to CRIP</h2>
+                <p style="color:var(--secondary-text); line-height:1.7; margin-bottom:2rem;">CRIP is your AI-powered Churn Retention Intelligence Platform. Upload any customer CSV and get instant risk scores, health metrics, and retention strategies.</p>
+                <button onclick="nextOnboardingStep(2)" class="btn-primary" style="width:100%;">Get Started <i class='bx bx-chevron-right'></i></button>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="onboarding-step" style="display:none; text-align:center;">
+                <div style="font-size:3rem; margin-bottom:1rem;">📊</div>
+                <h2 style="font-size:1.5rem; font-weight:700; margin-bottom:0.75rem;">Upload Your Data</h2>
+                <p style="color:var(--secondary-text); line-height:1.7; margin-bottom:1.5rem;">Drag & drop any CSV file below. CRIP works with telco, SaaS, retail — any dataset. The AI auto-detects your columns.</p>
+                <div style="background:rgba(79,172,254,0.08); border-radius:10px; padding:1rem; margin-bottom:1.5rem; text-align:left; font-size:0.85rem;">
+                    <p style="color:#4facfe; font-weight:600;">✓ No CSV template required</p>
+                    <p style="color:#4facfe; font-weight:600;">✓ Supervised + Unsupervised ML</p>
+                    <p style="color:#4facfe; font-weight:600;">✓ SHAP-based explainable AI</p>
+                </div>
+                <div style="display:flex;gap:0.75rem;">
+                    <button onclick="nextOnboardingStep(1)" class="btn-secondary" style="flex:1;"><i class='bx bx-chevron-left'></i> Back</button>
+                    <button onclick="nextOnboardingStep(3)" class="btn-primary" style="flex:2;">Next <i class='bx bx-chevron-right'></i></button>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="onboarding-step" style="display:none; text-align:center;">
+                <div style="font-size:3rem; margin-bottom:1rem;">🚀</div>
+                <h2 style="font-size:1.5rem; font-weight:700; margin-bottom:0.75rem;">You're Ready!</h2>
+                <p style="color:var(--secondary-text); line-height:1.7; margin-bottom:1.5rem;">Upload your CSV or try demo mode to explore the platform. Your AI dashboard, cohort charts, and revenue analysis are waiting.</p>
+                <div style="display:flex;gap:0.75rem;">
+                    <button onclick="nextOnboardingStep(2)" class="btn-secondary" style="flex:1;"><i class='bx bx-chevron-left'></i> Back</button>
+                    <button onclick="loadDemoMode(); finishOnboarding();" class="btn-secondary" style="flex:1; border-color:#a78bfa; color:#a78bfa;"><i class='bx bx-planet'></i> Try Demo</button>
+                    <button onclick="finishOnboarding()" class="btn-primary" style="flex:1;">Start Uploading</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

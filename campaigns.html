@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Campaigns - CRIP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <style>
+        .camp-container { padding: 100px 5% 4rem; max-width: 1500px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        .glass { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(10px); }
+        [data-theme='dark'] .glass { background: rgba(15,15,15,0.75); border-color: rgba(255,255,255,0.06); }
+        /* Builder workspace */
+        .builder-workspace { display: grid; grid-template-columns: 200px 1fr 220px; gap: 1rem; height: 520px; }
+        @media(max-width:1100px){.builder-workspace{grid-template-columns:1fr;height:auto;}}
+        /* Palette */
+        .palette { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; gap: 0.35rem; overflow-y: auto; backdrop-filter: blur(10px); }
+        [data-theme='dark'] .palette { background: rgba(15,15,15,0.75); border-color: rgba(255,255,255,0.06); }
+        .palette-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--secondary-text); margin: 0.5rem 0 0.2rem; }
+        .palette-block { background: var(--hover-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.5rem 0.75rem; font-size: 0.78rem; font-weight: 500; cursor: grab; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; user-select: none; }
+        .palette-block:hover { border-color: var(--risk-blue); background: rgba(0,85,255,0.05); }
+        .palette-block:active { cursor: grabbing; }
+        /* Canvas */
+        .canvas-area { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; position: relative; overflow: hidden; backdrop-filter: blur(10px); }
+        [data-theme='dark'] .canvas-area { background: rgba(15,15,15,0.75); border-color: rgba(255,255,255,0.06); }
+        .canvas-grid { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 28px 28px; pointer-events: none; }
+        .canvas-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+        #canvasNodes { position: absolute; inset: 0; }
+        .c-node { position: absolute; width: 160px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 10px; padding: 0.7rem; cursor: move; transition: box-shadow 0.2s; user-select: none; }
+        [data-theme='dark'] .c-node { background: #111; }
+        .c-node:hover, .c-node.selected { border-color: var(--risk-blue); box-shadow: 0 0 0 2px rgba(0,85,255,0.2); }
+        .c-node.node-trigger  { border-color: rgba(0,179,65,0.4); }
+        .c-node.node-condition{ border-color: rgba(242,186,0,0.4); }
+        .c-node.node-action   { border-color: rgba(0,85,255,0.4); }
+        .c-node.node-wait     { border-color: rgba(150,150,150,0.3); }
+        .cn-type { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+        .cn-label { font-size: 0.78rem; font-weight: 600; margin-top: 0.2rem; color: var(--text-color); }
+        .cn-port { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--border-color); background: var(--bg-color); position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); }
+        .canvas-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; gap: 0.5rem; }
+        /* Settings Panel */
+        .settings-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; overflow-y: auto; backdrop-filter: blur(10px); }
+        [data-theme='dark'] .settings-panel { background: rgba(15,15,15,0.75); border-color: rgba(255,255,255,0.06); }
+        .settings-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 0.5rem; color: var(--secondary-text); text-align: center; font-size: 0.82rem; }
+        .st-field { margin-bottom: 0.75rem; }
+        .st-field label { font-size: 0.7rem; font-weight: 600; color: var(--secondary-text); display: block; margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.06em; }
+        .st-input { background: var(--hover-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.5rem 0.7rem; color: var(--text-color); font-family: 'Poppins', sans-serif; font-size: 0.8rem; width: 100%; outline: none; }
+        .st-input:focus { border-color: var(--risk-blue); }
+        /* Campaign list */
+        .camp-row { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; transition: all 0.2s; }
+        [data-theme='dark'] .camp-row { background: rgba(15,15,15,0.75); border-color: rgba(255,255,255,0.06); }
+        .camp-row:hover { border-color: var(--risk-blue); }
+        .camp-status { padding: 0.18rem 0.55rem; border-radius: 99px; font-size: 0.65rem; font-weight: 700; }
+        .s-active { background: rgba(0,179,65,0.1); color: var(--risk-green); border: 1px solid rgba(0,179,65,0.2); }
+        .s-draft  { background: var(--hover-bg); color: var(--secondary-text); border: 1px solid var(--border-color); }
+        .s-paused { background: rgba(242,186,0,0.1); color: var(--risk-yellow); border: 1px solid rgba(242,186,0,0.2); }
+        .edit-btn { padding: 0.35rem 0.75rem; font-size: 0.75rem; font-weight: 600; border-radius: 6px; border: 1px solid var(--border-color); background: transparent; color: var(--text-color); cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.2s; }
+        .edit-btn:hover { background: var(--hover-bg); }
+    </style>
+</head>
+<body>
+    <div id="vanta-bg"></div>
+    <script>
+        var BASE_URL = "";
+        async function verifySession() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/auth/verify-session`, { method: "GET", credentials: "include" });
+                if (!res.ok) window.location.href = "login.html";
+            } catch (err) { window.location.href = "login.html"; }
+        }
+        verifySession();
+        async function handleSignOut() {
+            try { await fetch(`${BASE_URL}/api/auth/logout`, { method: "POST", credentials: "include" }); } catch(e) {}
+            window.location.href = "login.html";
+        }
+    </script>
+
+    <nav>
+        <div class="nav-left">
+            <a href="home.html" style="text-decoration:none;">
+                <div class="logo" style="display:flex; align-items:center;">
+                    <img src="logo.png" alt="CRIP" style="height: 38px;">
+                </div>
+            </a>
+        </div>
+        <div class="nav-center" style="display:flex; gap:2rem; align-items:center;">
+            <a href="home.html" class="nav-link">Home</a>
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="reports.html" class="nav-link">Reports</a>
+            <a href="grow.html" class="nav-link">Grow Corner</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+        </div>
+        <div class="nav-right">
+            <button class="theme-toggle" id="theme-toggle" style="margin-right:1rem;"><i class='bx bx-moon'></i></button>
+            <button onclick="handleSignOut()" class="cta-btn" style="padding:0.5rem 1.2rem; font-size:0.9rem; background:#cc3333;">Sign Out</button>
+        </div>
+    </nav>
+
+    <div class="camp-container">
+
+        <!-- Section A: Live AI Email Campaigns -->
+        <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:12px;padding:1.5rem 2rem;backdrop-filter:blur(10px);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <div>
+                    <h2 style="font-size:1.2rem;font-weight:600;"><i class='bx bx-bot' style="color:var(--risk-blue);margin-right:0.5rem;"></i>AI Retention Emails</h2>
+                    <p style="color:var(--secondary-text);font-size:0.82rem;margin-top:0.2rem;">Gemini-drafted emails for your high-risk customers. Send button appears only when email is in your dataset.</p>
+                </div>
+                <button id="dispatchAllBtn" onclick="dispatchAll()" style="display:none;padding:0.6rem 1.2rem;font-size:0.85rem;border:none;border-radius:6px;background:var(--risk-blue);color:#fff;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:600;"><i class='bx bxs-paper-plane'></i> Dispatch All</button>
+            </div>
+            <div id="aiEmailGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1rem;">
+                <p style="color:var(--secondary-text);font-size:0.85rem;"><i class="bx bx-loader-alt bx-spin"></i> Loading AI campaigns…</p>
+            </div>
+        </div>
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card-bg); padding:1.5rem 2rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px);">
+            <div>
+                <h1 style="font-size:1.8rem; font-weight:600;"><i class='bx bx-git-branch' style="color:var(--risk-blue); vertical-align:middle; margin-right:0.5rem;"></i>Marketing Automation</h1>
+                <p style="color:var(--secondary-text); font-size:0.9rem; margin-top:0.25rem;">Drag blocks onto the canvas to build multi-step retention workflows</p>
+            </div>
+            <div style="display:flex;gap:0.75rem;">
+                <button onclick="clearCanvas()" style="padding:0.6rem 1.1rem;font-size:0.85rem;border:1px solid var(--border-color);border-radius:6px;background:transparent;color:var(--text-color);cursor:pointer;font-family:'Poppins',sans-serif;font-weight:600;">
+                    <i class='bx bx-trash'></i> Clear
+                </button>
+                <button onclick="saveCampaign()" class="cta-btn" style="padding:0.6rem 1.2rem;font-size:0.85rem;"><i class='bx bx-save'></i> Save Campaign</button>
+            </div>
+        </div>
+
+        <!-- Builder -->
+        <div class="builder-workspace">
+            <!-- Palette -->
+            <div class="palette">
+                <div class="palette-label">Triggers</div>
+                <div class="palette-block" draggable="true" data-type="trigger" data-label="Risk Score > 75%" ondragstart="palDrag(event)"><i class='bx bx-radio-circle-marked' style="color:var(--risk-green);"></i> Risk Threshold</div>
+                <div class="palette-block" draggable="true" data-type="trigger" data-label="Payment Failed" ondragstart="palDrag(event)"><i class='bx bx-credit-card' style="color:var(--risk-green);"></i> Payment Failed</div>
+                <div class="palette-block" draggable="true" data-type="trigger" data-label="Inactive 7 Days" ondragstart="palDrag(event)"><i class='bx bx-time-five' style="color:var(--risk-green);"></i> Inactivity</div>
+
+                <div class="palette-label">Conditions</div>
+                <div class="palette-block" draggable="true" data-type="condition" data-label="Email Opened?" ondragstart="palDrag(event)"><i class='bx bx-envelope-open' style="color:var(--risk-yellow);"></i> Email Opened?</div>
+                <div class="palette-block" draggable="true" data-type="condition" data-label="Score > 80%?" ondragstart="palDrag(event)"><i class='bx bx-filter' style="color:var(--risk-yellow);"></i> Score Check</div>
+
+                <div class="palette-label">Actions</div>
+                <div class="palette-block" draggable="true" data-type="action" data-label="Send Email" ondragstart="palDrag(event)"><i class='bx bx-envelope' style="color:var(--risk-blue);"></i> Send Email</div>
+                <div class="palette-block" draggable="true" data-type="action" data-label="Send Discount" ondragstart="palDrag(event)"><i class='bx bx-gift' style="color:var(--risk-blue);"></i> Send Discount</div>
+                <div class="palette-block" draggable="true" data-type="action" data-label="Move Retention Stage" ondragstart="palDrag(event)"><i class='bx bx-transfer' style="color:var(--risk-blue);"></i> Move Retention Stage</div>
+                <div class="palette-block" draggable="true" data-type="action" data-label="Notify Team" ondragstart="palDrag(event)"><i class='bx bx-bell' style="color:var(--risk-blue);"></i> Notify Team</div>
+
+                <div class="palette-label">Delays</div>
+                <div class="palette-block" draggable="true" data-type="wait" data-label="Wait 2 Days" ondragstart="palDrag(event)"><i class='bx bx-timer' style="color:var(--secondary-text);"></i> Wait 2 Days</div>
+                <div class="palette-block" draggable="true" data-type="wait" data-label="Wait 1 Week" ondragstart="palDrag(event)"><i class='bx bx-calendar' style="color:var(--secondary-text);"></i> Wait 1 Week</div>
+            </div>
+
+            <!-- Canvas -->
+            <div class="canvas-area" id="canvasArea"
+                ondragover="canvasDragOver(event)"
+                ondrop="canvasDrop(event)"
+                ondragleave="canvasDragLeave(event)">
+                <div class="canvas-grid"></div>
+                <svg class="canvas-svg" id="canvasSvg"></svg>
+                <div id="canvasNodes"></div>
+                <div class="canvas-empty" id="canvasEmpty">
+                    <i class='bx bx-git-pull-request' style="font-size:2.5rem;color:var(--secondary-text);"></i>
+                    <div style="font-size:0.85rem;color:var(--secondary-text);font-weight:600;">Drag blocks here to build your workflow</div>
+                    <div style="font-size:0.75rem;color:var(--secondary-text);">Start with a Trigger, then add Conditions and Actions</div>
+                </div>
+            </div>
+
+            <!-- Settings Panel -->
+            <div class="settings-panel" id="settingsPanel">
+                <div class="settings-placeholder" id="settingsPlaceholder">
+                    <i class='bx bx-cog' style="font-size:2rem;"></i>
+                    <div>Click a node to configure it</div>
+                </div>
+                <div id="settingsForm" style="display:none;">
+                    <div style="font-size:0.82rem;font-weight:700;margin-bottom:0.85rem;" id="stTitle">Settings</div>
+                    <div class="st-field"><label>Label</label><input class="st-input" id="stLabel" oninput="updateLabel()"/></div>
+                    <div class="st-field"><label>Value / Note</label><input class="st-input" id="stValue" placeholder="e.g. 20% discount…"/></div>
+                    <div class="st-field"><label>Assigned To</label>
+                        <select class="st-input" id="stAssign"><option>Auto (AI)</option><option>Sales Rep</option><option>Support Team</option></select>
+                    </div>
+                    <button onclick="deleteSelected()" style="width:100%;margin-top:0.5rem;padding:0.5rem;font-size:0.78rem;font-weight:600;border:1px solid rgba(255,51,51,0.4);border-radius:6px;background:rgba(255,51,51,0.08);color:var(--risk-red);cursor:pointer;font-family:'Poppins',sans-serif;"><i class='bx bx-trash'></i> Remove Node</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section B: Saved Campaigns (MongoDB) -->
+        <div>
+            <div style="font-size:0.72rem;font-weight:700;color:var(--secondary-text);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.65rem;">Saved Campaigns</div>
+            <div id="campaignList"><p style="color:var(--secondary-text);font-size:0.85rem;"><i class="bx bx-loader-alt bx-spin"></i> Loading…</p></div>
+        </div>
+
+        <!-- Section C: A/B Test Results -->
+        <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:12px;padding:1.5rem 2rem;backdrop-filter:blur(10px);">
+            <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem;"><i class='bx bx-bar-chart-alt-2' style="color:var(--risk-yellow);margin-right:0.5rem;"></i>A/B Test Results</h2>
+            <div id="abStatsPanel" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <p style="grid-column:1/-1;color:var(--secondary-text);font-size:0.85rem;"><i class="bx bx-loader-alt bx-spin"></i> Loading A/B stats…</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="nav.js"></script>
+    <script>
+    let nodes = [], selectedId = null, nodeCounter = 0, palDragData = null;
+    let dragId = null, dragOffX = 0, dragOffY = 0;
+
+    const typeColor = { trigger:'var(--risk-green)', condition:'var(--risk-yellow)', action:'var(--risk-blue)', wait:'var(--secondary-text)' };
+    function escapeAttr(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+    function escapeHTML(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+
+    function palDrag(e) { palDragData = { type: e.currentTarget.dataset.type, label: e.currentTarget.dataset.label }; }
+    function canvasDragOver(e) { e.preventDefault(); e.currentTarget.style.borderColor='rgba(0,85,255,0.5)'; }
+    function canvasDragLeave(e) { e.currentTarget.style.borderColor=''; }
+    function canvasDrop(e) {
+        e.preventDefault(); e.currentTarget.style.borderColor='';
+        if (!palDragData) return;
+        const rect = document.getElementById('canvasArea').getBoundingClientRect();
+        addNode(palDragData.type, palDragData.label, Math.max(10,e.clientX-rect.left-80), Math.max(10,e.clientY-rect.top-30));
+        palDragData = null;
+    }
+    function addNode(type, label, x, y) {
+        const id = 'n'+(++nodeCounter);
+        nodes.push({id,type,label,x,y});
+        renderCanvas(); selectNode(id);
+        document.getElementById('canvasEmpty').style.display='none';
+    }
+    function renderCanvas() {
+        const c = document.getElementById('canvasNodes');
+        c.innerHTML = nodes.map(n=>`
+            <div class="c-node node-${n.type} ${n.id===selectedId?'selected':''}" id="${n.id}"
+                style="left:${n.x}px;top:${n.y}px;"
+                onmousedown="startDrag(event,'${n.id}')"
+                onclick="selectNode('${n.id}')">
+                <div class="cn-type" style="color:${typeColor[n.type]};">${n.type.toUpperCase()}</div>
+                <div class="cn-label">${n.label}</div>
+                <div class="cn-port"></div>
+            </div>`).join('');
+        drawSVG();
+    }
+    function drawSVG() {
+        const svg = document.getElementById('canvasSvg'); svg.innerHTML='';
+        const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+        const mk = document.createElementNS('http://www.w3.org/2000/svg','marker');
+        mk.setAttribute('id','arr');mk.setAttribute('markerWidth','8');mk.setAttribute('markerHeight','8');mk.setAttribute('refX','6');mk.setAttribute('refY','3');mk.setAttribute('orient','auto');
+        const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');poly.setAttribute('points','0 0,8 3,0 6');poly.setAttribute('fill','rgba(0,85,255,0.5)');mk.appendChild(poly);defs.appendChild(mk);svg.appendChild(defs);
+        for (let i=1;i<nodes.length;i++) {
+            const a=nodes[i-1],b=nodes[i];
+            const fx=a.x+160,fy=a.y+30,tx=b.x,ty=b.y+30,mx=(fx+tx)/2;
+            const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+            p.setAttribute('d',`M${fx},${fy} C${mx},${fy} ${mx},${ty} ${tx},${ty}`);
+            p.setAttribute('stroke','rgba(0,85,255,0.4)');p.setAttribute('stroke-width','2');p.setAttribute('fill','none');p.setAttribute('marker-end','url(#arr)');
+            svg.appendChild(p);
+        }
+    }
+    function selectNode(id) {
+        selectedId=id; const n=nodes.find(x=>x.id===id);
+        document.getElementById('settingsPlaceholder').style.display='none';
+        document.getElementById('settingsForm').style.display='block';
+        document.getElementById('stTitle').textContent = n.type.charAt(0).toUpperCase()+n.type.slice(1)+' Settings';
+        document.getElementById('stLabel').value = n.label;
+        document.getElementById('stValue').value = '';
+        renderCanvas();
+    }
+    function updateLabel() {
+        const n=nodes.find(x=>x.id===selectedId);
+        if(n){n.label=document.getElementById('stLabel').value;renderCanvas();}
+    }
+    function deleteSelected() {
+        nodes=nodes.filter(n=>n.id!==selectedId); selectedId=null;
+        document.getElementById('settingsPlaceholder').style.display='flex';
+        document.getElementById('settingsForm').style.display='none';
+        renderCanvas();
+        if(!nodes.length) document.getElementById('canvasEmpty').style.display='flex';
+    }
+    function clearCanvas() {
+        nodes=[]; selectedId=null;
+        document.getElementById('canvasNodes').innerHTML='';
+        document.getElementById('canvasSvg').innerHTML='';
+        document.getElementById('canvasEmpty').style.display='flex';
+        document.getElementById('settingsPlaceholder').style.display='flex';
+        document.getElementById('settingsForm').style.display='none';
+    }
+    // Node dragging
+    function startDrag(e,id){
+        if(e.button!==0)return; e.stopPropagation();
+        dragId=id; const el=document.getElementById(id);
+        const rect=el.getBoundingClientRect(); dragOffX=e.clientX-rect.left; dragOffY=e.clientY-rect.top;
+        document.onmousemove=onDrag; document.onmouseup=stopDrag;
+    }
+    function onDrag(e){
+        if(!dragId)return;
+        const n=nodes.find(x=>x.id===dragId);
+        const cr=document.getElementById('canvasArea').getBoundingClientRect();
+        n.x=Math.max(0,e.clientX-cr.left-dragOffX); n.y=Math.max(0,e.clientY-cr.top-dragOffY);
+        const el=document.getElementById(dragId); if(el){el.style.left=n.x+'px';el.style.top=n.y+'px';} drawSVG();
+    }
+    function stopDrag(){dragId=null;document.onmousemove=null;document.onmouseup=null;}
+    function saveCampaign() {
+        if(nodes.length<2){alert('Add at least 2 nodes to save a campaign.');return;}
+        const btn = document.querySelector('button[onclick="saveCampaign()"]');
+        const origHtml = btn.innerHTML;
+        btn.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Saving...";
+        btn.disabled = true;
+
+        fetch('/api/grow/save-campaign', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'include',
+            body: JSON.stringify({
+                name: 'Campaign ' + new Date().toLocaleDateString('en-IN'),
+                trigger: nodes[0]?.label || 'Custom Trigger',
+                nodes: nodes,
+                status: 'draft'
+            })
+        }).then(res=>res.json()).then(data=>{
+            if(data.success) {
+                alert('Campaign saved to database!');
+                loadSavedCampaigns();
+            } else alert('Failed to save.');
+        }).catch(e=>alert('Error saving campaign')).finally(()=>{
+            btn.innerHTML = origHtml;
+            btn.disabled = false;
+        });
+    }
+
+    // Seed canvas
+    const flow=[{type:'trigger',label:'Risk Score > 75%',x:30,y:180},{type:'condition',label:'Email Opened?',x:240,y:100},{type:'action',label:'Send Discount',x:450,y:40},{type:'wait',label:'Wait 2 Days',x:450,y:200},{type:'action',label:'Send Email',x:660,y:200}];
+    flow.forEach(f=>{nodeCounter++;nodes.push({id:'n'+nodeCounter,...f});});
+    renderCanvas(); document.getElementById('canvasEmpty').style.display='none';
+
+    // Section A: Live AI Emails
+    async function loadAIEmails() {
+        try {
+            const res = await fetch('/api/grow/campaigns', { credentials: 'include' });
+            const data = await res.json();
+            const grid = document.getElementById('aiEmailGrid');
+            if(!data.success || data.count === 0) {
+                grid.innerHTML = '<p style="color:var(--risk-green);font-size:0.85rem;"><i class="bx bx-check-circle"></i> No high-risk customers require immediate outreach.</p>';
+                return;
+            }
+            document.getElementById('dispatchAllBtn').style.display = 'block';
+            grid.innerHTML = data.campaigns.map(c => `
+                <div style="background:var(--hover-bg);border:1px solid var(--border-color);border-radius:8px;padding:1rem;">
+                    <div style="font-weight:600;font-size:0.85rem;margin-bottom:0.25rem;">${escapeHTML(c.customerID)} - <span style="color:var(--risk-red)">${escapeHTML(c.risk_score)}% Risk</span></div>
+                    <div style="font-size:0.75rem;color:var(--secondary-text);margin-bottom:0.5rem;"><i class="bx bx-target-lock"></i> ${escapeHTML(c.campaign_type)}</div>
+                    <div style="font-size:0.8rem;background:var(--bg-color);padding:0.5rem;border-radius:4px;border:1px dashed var(--border-color);margin-bottom:0.5rem;">
+                        <strong>Subj:</strong> ${escapeHTML(c.email_subject)}<br/><br/>
+                        <span style="color:var(--secondary-text);white-space:pre-wrap;">${escapeHTML(String(c.email_body || '').substring(0, 100))}...</span>
+                    </div>
+                    <button class="btn-send-ai" onclick="sendAiEmail(this)" data-target-id="${escapeAttr(c._id)}" data-subject="${escapeAttr(c.email_subject)}" data-body="${escapeAttr(c.email_body)}" data-email="${escapeAttr(c.recipient_email || '')}" ${c.recipient_email ? '' : 'disabled'} style="width:100%;padding:0.5rem;border-radius:6px;border:none;background:${c.recipient_email ? 'var(--text-color)' : 'var(--hover-bg)'};color:${c.recipient_email ? 'var(--bg-color)' : 'var(--secondary-text)'};cursor:${c.recipient_email ? 'pointer' : 'not-allowed'};font-family:'Poppins',sans-serif;font-size:0.75rem;font-weight:600;"><i class="bx ${c.recipient_email ? 'bx-send' : 'bx-copy'}"></i> ${c.recipient_email ? 'Dispatch Email' : 'Draft Only - No Email'}</button>
+                </div>
+            `).join('');
+        } catch(e) { document.getElementById('aiEmailGrid').innerHTML = '<p style="color:var(--risk-red);">Failed to load.</p>'; }
+    }
+
+    async function sendAiEmail(btn, target_id, subject, body, target_email) {
+        target_id = target_id || btn.dataset.targetId;
+        subject = subject || btn.dataset.subject || '';
+        body = body || btn.dataset.body || '';
+        target_email = target_email || btn.dataset.email || '';
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Sending...';
+        btn.disabled = true;
+        try {
+            const res = await fetch('/api/grow/send', {
+                method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include',
+                body: JSON.stringify({ target_id, subject, body, target_email })
+            });
+            if(res.ok) {
+                btn.innerHTML = '<i class="bx bx-check"></i> Sent!';
+                btn.style.background = 'var(--risk-green)';
+                btn.style.color = '#fff';
+            } else throw new Error();
+        } catch(e) {
+            btn.innerHTML = 'Failed';
+            btn.style.background = 'var(--risk-red)';
+            setTimeout(()=>{ btn.innerHTML = orig; btn.style.background = 'var(--text-color)'; btn.disabled = false; }, 2000);
+        }
+    }
+
+    function dispatchAll() {
+        if(!confirm('Dispatch all emails via Nodemailer?')) return;
+        const btn = document.getElementById('dispatchAllBtn');
+        btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Dispatching...';
+        document.querySelectorAll('.btn-send-ai').forEach(b => b.click());
+        setTimeout(() => { btn.innerHTML = '<i class="bx bx-check-double"></i> All Dispatched'; btn.style.background = 'var(--risk-green)'; }, 1000);
+    }
+
+    // Section B: Saved Campaigns
+    async function loadSavedCampaigns() {
+        try {
+            const res = await fetch('/api/grow/saved-campaigns', { credentials: 'include' });
+            const data = await res.json();
+            const list = document.getElementById('campaignList');
+            if(!data.success || data.campaigns.length === 0) {
+                list.innerHTML = '<p style="color:var(--secondary-text);font-size:0.85rem;">No saved campaigns. Build one above.</p>';
+                return;
+            }
+            const sClass = s => s==='active'?'s-active':s==='paused'?'s-paused':'s-draft';
+            list.innerHTML = data.campaigns.map(c => `
+                <div class="camp-row">
+                    <i class='bx bx-git-branch' style="font-size:1.3rem;color:var(--risk-blue);flex-shrink:0;"></i>
+                    <div style="flex:1;">
+                        <div style="font-weight:700;font-size:0.88rem;">${escapeHTML(c.name)}</div>
+                        <div style="font-size:0.75rem;color:var(--secondary-text);margin-top:0.1rem;">Trigger: ${escapeHTML(c.trigger)} - Enrolled: <strong>${escapeHTML(c.enrolled)}</strong> - Nodes: ${escapeHTML(c.nodes.length)}</div>
+                    </div>
+                    <span class="camp-status ${sClass(c.status)}">${escapeHTML(String(c.status || 'draft').charAt(0).toUpperCase()+String(c.status || 'draft').slice(1))}</span>
+                    <button onclick="deleteCampaign('${escapeAttr(c._id)}')" style="background:none;border:none;cursor:pointer;color:var(--risk-red);font-size:1.1rem;padding:0.25rem;"><i class='bx bx-trash'></i></button>
+                </div>
+            `).join('');
+        } catch(e) { document.getElementById('campaignList').innerHTML = '<p style="color:var(--risk-red);">Failed to load campaigns.</p>'; }
+    }
+
+    async function deleteCampaign(id) {
+        if(!confirm('Delete this campaign?')) return;
+        try {
+            await fetch('/api/grow/saved-campaigns/' + id, { method: 'DELETE', credentials: 'include' });
+            loadSavedCampaigns();
+        } catch(e) { alert('Failed to delete'); }
+    }
+
+    // Section C: A/B Stats
+    async function loadAbStats() {
+        try {
+            const res = await fetch('/api/grow/ab-stats', { credentials: 'include' });
+            const data = await res.json();
+            const panel = document.getElementById('abStatsPanel');
+            if(!data.success) throw new Error();
+            
+            panel.innerHTML = ['A', 'B'].map(v => {
+                const s = data.stats[v];
+                const ret = v === 'A' ? data.retentionA : data.retentionB;
+                return `
+                <div style="background:var(--hover-bg);border:1px solid var(--border-color);border-radius:8px;padding:1rem;">
+                    <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.5rem;color:var(--risk-blue);">Variant ${v}</div>
+                    <div style="font-size:1.5rem;font-weight:700;">${ret}% <span style="font-size:0.75rem;color:var(--secondary-text);font-weight:400;">Retention</span></div>
+                    <div style="font-size:0.8rem;color:var(--secondary-text);margin-top:0.5rem;">
+                        Enrolled: ${s.total} <br/>
+                        Retained: <span style="color:var(--risk-green);">${s.retained}</span> <br/>
+                        Churned: <span style="color:var(--risk-red);">${s.churned}</span> <br/>
+                        Pending: ${s.pending}
+                    </div>
+                </div>`;
+            }).join('');
+        } catch(e) { document.getElementById('abStatsPanel').innerHTML = '<p style="color:var(--risk-red);">Failed to load A/B stats.</p>'; }
+    }
+
+    // Boot
+    loadAIEmails();
+    loadSavedCampaigns();
+    loadAbStats();
+    </script>
+</body>
+</html>

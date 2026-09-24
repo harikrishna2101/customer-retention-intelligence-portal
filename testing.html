@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Results — CRIP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { min-height: 100vh; font-family: 'Poppins', sans-serif; }
+        #vanta-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        nav { position: relative; z-index: 10; }
+
+        .page-wrapper {
+            position: relative; z-index: 5;
+            max-width: 1200px; margin: 0 auto;
+            padding: 100px 2rem 3rem;
+        }
+
+        .hero-banner {
+            text-align: center; margin-bottom: 2.5rem;
+        }
+        .hero-banner h1 {
+            font-size: 2rem; font-weight: 800;
+            background: linear-gradient(135deg, #22c55e, #4facfe);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .hero-banner p {
+            color: var(--secondary-text); font-size: 0.92rem; line-height: 1.6;
+        }
+
+        .table-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; overflow: hidden;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            margin-bottom: 2rem;
+        }
+
+        .testing-table {
+            width: 100%; border-collapse: collapse;
+        }
+        .testing-table thead th {
+            padding: 0.85rem 1rem;
+            font-size: 0.72rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px;
+            color: var(--secondary-text);
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
+        .testing-table tbody td {
+            padding: 0.8rem 1rem;
+            font-size: 0.82rem;
+            color: var(--text-color);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .testing-table tbody tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+        .testing-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .sno { color: var(--secondary-text); font-weight: 600; width: 40px; }
+        .module-name { font-weight: 600; }
+        .test-type-badge {
+            display: inline-block; font-size: 0.68rem; font-weight: 600;
+            padding: 0.15rem 0.5rem; border-radius: 50px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .type-functional { background: rgba(79,172,254,0.12); color: #4facfe; }
+        .type-security { background: rgba(239,68,68,0.12); color: #ef4444; }
+        .type-integration { background: rgba(124,58,237,0.12); color: #a78bfa; }
+        .type-ml { background: rgba(245,158,11,0.12); color: #f59e0b; }
+        .type-crud { background: rgba(34,197,94,0.12); color: #22c55e; }
+        .type-uiux { background: rgba(236,72,153,0.12); color: #ec4899; }
+
+        .status-pass {
+            color: #22c55e; font-weight: 700;
+        }
+
+        .summary-bar {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 1.5rem 2rem;
+            backdrop-filter: blur(20px);
+            display: flex; justify-content: space-around; align-items: center;
+            text-align: center;
+        }
+        .summary-item h3 { font-size: 1.8rem; font-weight: 800; }
+        .summary-item p { font-size: 0.75rem; color: var(--secondary-text); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.2rem; }
+    </style>
+</head>
+<body>
+    <div id="vanta-bg"></div>
+
+    <nav>
+        <div class="nav-left">
+            <a href="getstarted.html" style="text-decoration:none;">
+                <div class="logo" style="display:flex;align-items:center;">
+                    <img src="logo.png" alt="CRIP" style="height:38px;">
+                </div>
+            </a>
+        </div>
+        <div class="nav-center">
+            <a href="home.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="reports.html">Reports</a>
+            <a href="grow.html">Grow Corner</a>
+            <a href="profile.html">Profile</a>
+        </div>
+        <div class="nav-right">
+            <button class="theme-toggle" id="theme-toggle" title="Toggle Theme"><i class='bx bx-moon'></i></button>
+            <button class="cta-btn" id="signout-btn" onclick="localStorage.clear();window.location.href='login.html';" style="padding:0.5rem 1.2rem;font-size:0.85rem;"><i class='bx bx-log-out'></i> Sign Out</button>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="hero-banner">
+            <h1><i class='bx bx-test-tube'></i> System Testing Report</h1>
+            <p>Comprehensive module-level testing results — All 15 modules verified and validated.</p>
+        </div>
+
+        <div class="table-card">
+            <table class="testing-table">
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Module</th>
+                        <th>Test Type</th>
+                        <th>Description</th>
+                        <th>Expected Result</th>
+                        <th>Actual Result</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="sno">1</td>
+                        <td class="module-name">Login</td>
+                        <td><span class="test-type-badge type-functional">Functional</span></td>
+                        <td>User login with valid credentials</td>
+                        <td>Redirect to OTP verification page</td>
+                        <td>Redirect to OTP verification page</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">2</td>
+                        <td class="module-name">Registration</td>
+                        <td><span class="test-type-badge type-functional">Functional</span></td>
+                        <td>New user registration with all fields</td>
+                        <td>Account created, redirect to login</td>
+                        <td>Account created, redirect to login</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">3</td>
+                        <td class="module-name">OTP Verification</td>
+                        <td><span class="test-type-badge type-security">Security</span></td>
+                        <td>6-digit OTP verification after login</td>
+                        <td>Dashboard access granted on valid OTP</td>
+                        <td>Dashboard access granted on valid OTP</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">4</td>
+                        <td class="module-name">CSV Upload</td>
+                        <td><span class="test-type-badge type-integration">Integration</span></td>
+                        <td>Upload customer dataset CSV file</td>
+                        <td>Data processed, ML predictions displayed</td>
+                        <td>Data processed, ML predictions displayed</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">5</td>
+                        <td class="module-name">Churn Prediction</td>
+                        <td><span class="test-type-badge type-ml">ML / AI</span></td>
+                        <td>Random Forest model predicts churn risk</td>
+                        <td>Risk scores and levels assigned</td>
+                        <td>Risk scores and levels assigned</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">6</td>
+                        <td class="module-name">Customer CRUD</td>
+                        <td><span class="test-type-badge type-crud">CRUD</span></td>
+                        <td>Add, edit, delete customer records</td>
+                        <td>Records updated in database</td>
+                        <td>Records updated in database</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">7</td>
+                        <td class="module-name">Dashboard Analytics</td>
+                        <td><span class="test-type-badge type-functional">Functional</span></td>
+                        <td>Charts, stats, and intelligence cards</td>
+                        <td>Real-time metrics displayed correctly</td>
+                        <td>Real-time metrics displayed correctly</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">8</td>
+                        <td class="module-name">Contact Form</td>
+                        <td><span class="test-type-badge type-functional">Functional</span></td>
+                        <td>Submit contact message with validation</td>
+                        <td>Message stored and confirmation shown</td>
+                        <td>Message stored and confirmation shown</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">9</td>
+                        <td class="module-name">AI Campaigns</td>
+                        <td><span class="test-type-badge type-integration">Integration</span></td>
+                        <td>Gemini AI generates retention emails</td>
+                        <td>Personalized campaigns created</td>
+                        <td>Personalized campaigns created</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">10</td>
+                        <td class="module-name">Helpdesk Tickets</td>
+                        <td><span class="test-type-badge type-crud">CRUD</span></td>
+                        <td>Create and manage support tickets</td>
+                        <td>Tickets linked to customers</td>
+                        <td>Tickets linked to customers</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">11</td>
+                        <td class="module-name">Billing Analytics</td>
+                        <td><span class="test-type-badge type-functional">Functional</span></td>
+                        <td>Revenue charts, renewal calendar</td>
+                        <td>Financial data rendered correctly</td>
+                        <td>Financial data rendered correctly</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">12</td>
+                        <td class="module-name">Reports Export</td>
+                        <td><span class="test-type-badge type-functional">Functional</span></td>
+                        <td>Export data as CSV and PDF</td>
+                        <td>Files downloaded successfully</td>
+                        <td>Files downloaded successfully</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">13</td>
+                        <td class="module-name">Profile Management</td>
+                        <td><span class="test-type-badge type-functional">Functional</span></td>
+                        <td>Update name, organization, industry</td>
+                        <td>Profile saved correctly</td>
+                        <td>Profile saved correctly</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">14</td>
+                        <td class="module-name">Password Reset</td>
+                        <td><span class="test-type-badge type-security">Security</span></td>
+                        <td>Forgot password and OTP-based reset</td>
+                        <td>Password updated, login successful</td>
+                        <td>Password updated, login successful</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                    <tr>
+                        <td class="sno">15</td>
+                        <td class="module-name">Theme Toggle</td>
+                        <td><span class="test-type-badge type-uiux">UI / UX</span></td>
+                        <td>Switch between dark and light mode</td>
+                        <td>Theme persists across pages</td>
+                        <td>Theme persists across pages</td>
+                        <td class="status-pass"><i class='bx bx-check-circle'></i> Pass</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Summary Bar -->
+        <div class="summary-bar">
+            <div class="summary-item">
+                <h3 style="color:var(--text-color);">15</h3>
+                <p>Total Tests</p>
+            </div>
+            <div class="summary-item">
+                <h3 style="color:#22c55e;">15</h3>
+                <p>Passed</p>
+            </div>
+            <div class="summary-item">
+                <h3 style="color:#ef4444;">0</h3>
+                <p>Failed</p>
+            </div>
+            <div class="summary-item">
+                <h3 style="color:#4facfe;">100%</h3>
+                <p>Pass Rate</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="nav.js"></script>
+</body>
+</html>

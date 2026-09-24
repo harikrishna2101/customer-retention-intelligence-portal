@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Profile - CRIP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .cust-container { padding: 100px 5% 4rem; max-width: 1300px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        .glass { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(10px); }
+        [data-theme='dark'] .glass { background: rgba(15,15,15,0.75); border-color: rgba(255,255,255,0.06); }
+        .profile-hero { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+        .avatar { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 700; flex-shrink: 0; border: 3px solid; font-family: 'Poppins', sans-serif; }
+        .score-badge { padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.72rem; font-weight: 700; }
+        .badge-high { background: rgba(255,51,51,0.12); color: var(--risk-red); border: 1px solid rgba(255,51,51,0.2); }
+        .badge-warn { background: rgba(242,186,0,0.12); color: var(--risk-yellow); border: 1px solid rgba(242,186,0,0.2); }
+        .badge-safe { background: rgba(0,179,65,0.12); color: var(--risk-green); border: 1px solid rgba(0,179,65,0.2); }
+        .badge-blue { background: rgba(0,85,255,0.12); color: var(--risk-blue); border: 1px solid rgba(0,85,255,0.2); }
+        .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        @media(max-width:900px){ .grid-2{grid-template-columns:1fr;} }
+        .tl-item { display: flex; gap: 1rem; padding-bottom: 0.85rem; }
+        .tl-dot-wrap { display: flex; flex-direction: column; align-items: center; }
+        .tl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+        .tl-line { width: 2px; flex: 1; min-height: 24px; background: var(--border-color); margin-top: 4px; }
+        .tl-title { font-size: 0.84rem; font-weight: 600; }
+        .tl-desc { font-size: 0.75rem; color: var(--secondary-text); margin-top: 0.1rem; }
+        .tl-time { font-size: 0.7rem; color: var(--secondary-text); margin-top: 0.15rem; opacity: 0.7; }
+        .linked-ticket { background: var(--hover-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.7rem 1rem; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; transition: all 0.2s; }
+        .linked-ticket:hover { border-color: var(--risk-blue); }
+        .action-btn { width: 100%; padding: 0.65rem; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: transparent; color: var(--text-color); display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; transition: all 0.2s; }
+        .action-btn:hover { background: var(--hover-bg); }
+        .action-btn.primary { background: var(--text-color); color: var(--bg-color); border-color: var(--text-color); }
+        .action-btn.primary:hover { opacity: 0.85; }
+        .kpi-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+        .kpi-box { text-align: center; }
+        .kpi-val { font-size: 1.4rem; font-weight: 700; }
+        .kpi-label { font-size: 0.68rem; color: var(--secondary-text); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.2rem; }
+    </style>
+</head>
+<body>
+    <div id="vanta-bg"></div>
+    <script>
+        var BASE_URL = "";
+        async function verifySession() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/auth/verify-session`, { method: "GET", credentials: "include" });
+                if (!res.ok) window.location.href = "login.html";
+            } catch (err) { window.location.href = "login.html"; }
+        }
+        verifySession();
+        async function handleSignOut() {
+            try { await fetch(`${BASE_URL}/api/auth/logout`, { method: "POST", credentials: "include" }); } catch(e) {}
+            window.location.href = "login.html";
+        }
+    </script>
+
+    <nav>
+        <div class="nav-left">
+            <a href="home.html" style="text-decoration:none;">
+                <div class="logo" style="display:flex; align-items:center;">
+                    <img src="logo.png" alt="CRIP" style="height: 38px;">
+                </div>
+            </a>
+        </div>
+        <div class="nav-center" style="display:flex; gap:2rem; align-items:center;">
+            <a href="home.html" class="nav-link">Home</a>
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="reports.html" class="nav-link">Reports</a>
+            <a href="grow.html" class="nav-link">Grow Corner</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+        </div>
+        <div class="nav-right">
+            <button class="theme-toggle" id="theme-toggle" style="margin-right:1rem;"><i class='bx bx-moon'></i></button>
+            <button onclick="handleSignOut()" class="cta-btn" style="padding:0.5rem 1.2rem; font-size:0.9rem; background:#cc3333;">Sign Out</button>
+        </div>
+    </nav>
+
+    <div class="cust-container" id="custContainer">
+        <p style="color:var(--secondary-text);">Loading customer profile…</p>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="nav.js"></script>
+    <script>
+    // ── Customer Profile — Live Data ──
+    const bc = r => { const v=(r||'').toLowerCase(); return v.includes('high')?'badge-high':v.includes('warn')||v.includes('med')?'badge-warn':'badge-safe'; };
+    const ac = r => { const v=(r||'').toLowerCase(); return v.includes('high')?'var(--risk-red)':v.includes('warn')||v.includes('med')?'var(--risk-yellow)':'var(--risk-green)'; };
+    let currentCustomer = null;
+
+    function getName(c) { return c.name || c.customer_name || c.Name || c.customerID || 'Customer'; }
+    function getSeg(c)  { return c.industry || c.segment || c.Industry || c.Segment || '—'; }
+    function getPlan(c) { return c.plan || c.Plan || c.subscription_plan || 'Standard'; }
+
+    async function loadProfile() {
+        const cid = new URLSearchParams(window.location.search).get('id');
+        if (!cid) {
+            document.getElementById('custContainer').innerHTML = '<p style="color:var(--secondary-text);padding:2rem;">No customer ID specified. <a href="reports.html">← Back to Reports</a></p>';
+            return;
+        }
+
+        document.getElementById('custContainer').innerHTML = '<p style="color:var(--secondary-text);padding:2rem;"><i class="bx bx-loader-alt bx-spin"></i> Loading profile…</p>';
+
+        try {
+            const res = await fetch('/api/data/customers?customerID=' + encodeURIComponent(cid), { credentials: 'include' });
+            if (!res.ok) throw new Error('API ' + res.status);
+            const data = await res.json();
+            if (!data.success || !data.customers.length) throw new Error('not_found');
+            render(data.customers[0]);
+        } catch (err) {
+            if (err.message === 'not_found') {
+                document.getElementById('custContainer').innerHTML = `<p style="color:var(--secondary-text);padding:2rem;">Customer <strong>${cid}</strong> not found. <a href="reports.html" style="color:var(--risk-blue);">← Back to Reports</a></p>`;
+            } else {
+                document.getElementById('custContainer').innerHTML = '<p style="color:var(--risk-red);padding:2rem;"><i class="bx bx-error-circle"></i> Failed to load. Make sure the server is running.</p>';
+            }
+        }
+    }
+
+    async function sendRetentionEmail(btn) {
+        if (!currentCustomer?._id) return;
+        const original = btn.innerHTML;
+        btn.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Preparing...";
+        btn.disabled = true;
+        try {
+            const draftRes = await fetch('/api/grow/email/' + encodeURIComponent(currentCustomer._id), { credentials: 'include' });
+            const draft = await draftRes.json();
+            if (!draft.success) throw new Error(draft.message || 'draft failed');
+            if (!draft.recipient_email) {
+                btn.innerHTML = "<i class='bx bx-copy'></i> Draft Only";
+                alert('No email field exists for this customer. Use Campaigns page or Grow Corner to copy the AI draft.');
+                return;
+            }
+            const sendRes = await fetch('/api/grow/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    target_id: currentCustomer._id,
+                    subject: draft.email_subject,
+                    body: draft.email_body,
+                    target_email: draft.recipient_email
+                })
+            });
+            if (!sendRes.ok) throw new Error('send failed');
+            btn.innerHTML = "<i class='bx bx-check'></i> Email Sent";
+        } catch (err) {
+            btn.innerHTML = original;
+            btn.disabled = false;
+            alert('Could not send email. Check email data/server config.');
+        }
+    }
+
+    async function createSupportTicket(btn) {
+        if (!currentCustomer) return;
+        const original = btn.innerHTML;
+        btn.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Creating...";
+        btn.disabled = true;
+        try {
+            const res = await fetch('/api/data/tickets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    customerID: currentCustomer.customerID,
+                    customerName: getName(currentCustomer),
+                    category: 'Service Quality',
+                    priority: (parseFloat(currentCustomer.risk_score) || 0) >= 70 ? 'High' : 'Medium',
+                    description: `Follow up on churn risk score ${Math.round(parseFloat(currentCustomer.risk_score) || 0)}%.`
+                })
+            });
+            if (!res.ok) throw new Error('ticket failed');
+            btn.innerHTML = "<i class='bx bx-check'></i> Ticket Created";
+        } catch (err) {
+            btn.innerHTML = original;
+            btn.disabled = false;
+            alert('Could not create support ticket.');
+        }
+    }
+
+    async function sendDiscountOffer(btn) {
+        if (!currentCustomer?._id) return;
+        const original = btn.innerHTML;
+        btn.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Saving...";
+        btn.disabled = true;
+        try {
+            const res = await fetch(`/api/data/customers/${currentCustomer._id}/actions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    type: 'campaign',
+                    text: 'Discount offer prepared for retention follow-up.'
+                })
+            });
+            if (!res.ok) throw new Error('discount failed');
+            btn.innerHTML = "<i class='bx bx-check'></i> Offer Logged";
+        } catch (err) {
+            btn.innerHTML = original;
+            btn.disabled = false;
+            alert('Could not log discount offer.');
+        }
+    }
+
+    const hiddenCustomerFields = new Set(['_id','__v','customerID','risk_score','risk_level','uploadedBy','createdAt','updatedAt','xai_reason1','xai_reason2','clv','health_score','prev_risk_score','renewalDate','crm_stage','ab_variant','campaign_sent_at','campaign_outcome','actionHistory']);
+    function escapeHTML(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+    function isMoneyField(key) { return /(charge|price|cost|mrr|amount|revenue|payment|totalcharges|monthlycharges|clv|ltv|value)/i.test(key); }
+    function detectCurrencySymbol(c) {
+        const symbols = ['₹', '$', '€', '£', '¥', '₩', '₽', '₺', '₫', '₱', '฿', '₪', '₦', 'R$'];
+        for (const value of Object.values(c || {})) {
+            const text = String(value ?? '');
+            const found = symbols.find(sym => text.includes(sym));
+            if (found) return found;
+            const code = text.match(/\b(USD|INR|EUR|GBP|JPY|AUD|CAD|SGD|AED)\b/i);
+            if (code) return code[1].toUpperCase() + ' ';
+        }
+        return '';
+    }
+    function formatCustomerValue(key, value, c) {
+        if (value === null || value === undefined || value === '') return '—';
+        if (!isMoneyField(key)) return value;
+        const text = String(value).trim();
+        if (/[₹$€£¥₩₽₺₫₱฿₪₦]/.test(text) || /\b(USD|INR|EUR|GBP|JPY|AUD|CAD|SGD|AED)\b/i.test(text)) return text;
+        const num = Number(text.replace(/,/g, ''));
+        if (!Number.isFinite(num)) return value;
+        const symbol = detectCurrencySymbol(c);
+        return (symbol || '') + num.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+    }
+
+    function render(c) {
+        currentCustomer = c;
+        const name    = getName(c);
+        const seg     = getSeg(c);
+        const plan    = getPlan(c);
+        const score   = Math.round(parseFloat(c.risk_score) || 0);
+        const risk    = c.risk_level || (score >= 70 ? 'High Risk' : score >= 40 ? 'Warning' : 'Safe');
+        const stageLabels = { highrisk: 'High Risk', contacted: 'Contacted', negotiating: 'Negotiating', saved: 'Saved', churned: 'Churned' };
+        const retentionStage = stageLabels[c.crm_stage] || stageLabels[String(c.crm_stage || '').toLowerCase()] || risk;
+        const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        const since   = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN', {month:'short',year:'numeric'}) : '—';
+        const updatedAt = c.updatedAt ? new Date(c.updatedAt).toLocaleDateString('en-IN') : '—';
+        const ltv     = c.ltv || c.lifetime_value || c.LTV || '—';
+
+        document.title = name + ' — CRIP';
+
+        // Build metadata rows for display
+        const metaKeys = Object.keys(c).filter(k => !hiddenCustomerFields.has(k));
+        const metaHtml = metaKeys.slice(0, 8).map(k => `<div style="display:flex;justify-content:space-between;padding:0.45rem 0;border-bottom:1px solid var(--border-color);font-size:0.82rem;"><span style="color:var(--secondary-text);text-transform:capitalize;">${escapeHTML(k.replace(/_/g,' '))}</span><span style="font-weight:500;">${escapeHTML(formatCustomerValue(k, c[k], c))}</span></div>`).join('');
+
+        // Simulate trend from score (last 10 weeks, linear approach to current score)
+        const base = Math.max(10, score - 45);
+        const trend = Array.from({length:10}, (_,i) => Math.round(base + (score - base) * (i / 9)));
+
+        document.getElementById('custContainer').innerHTML = `
+        <a href="reports.html" style="font-size:0.85rem; color:var(--secondary-text); text-decoration:none; display:flex; align-items:center; gap:0.3rem;"><i class="bx bx-arrow-back"></i> Back to Reports</a>
+
+        <!-- Hero -->
+        <div class="glass">
+            <div class="profile-hero">
+                <div class="avatar" style="background:rgba(0,85,255,0.1);color:var(--risk-blue);border-color:var(--risk-blue);">${initials}</div>
+                <div style="flex:1;">
+                    <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.3rem;">
+                        <h1 style="font-size:1.5rem;font-weight:600;">${escapeHTML(name)}</h1>
+                        <span class="score-badge ${bc(risk)}">${escapeHTML(risk)}</span>
+                        <span class="score-badge badge-blue">${escapeHTML(seg)}</span>
+                    </div>
+                    <div style="font-size:0.8rem;color:var(--secondary-text);">${escapeHTML(c.customerID)} - Since ${escapeHTML(since)} - ${escapeHTML(plan)} Plan</div>
+                    <div class="kpi-row" style="margin-top:1rem;">
+                        <div class="kpi-box"><div class="kpi-val" style="color:var(--risk-green);">${escapeHTML(formatCustomerValue('ltv', ltv, c))}</div><div class="kpi-label">Lifetime Value</div></div>
+                        <div class="kpi-box"><div class="kpi-val" style="color:${ac(risk)};">${score}%</div><div class="kpi-label">Churn Score</div></div>
+                        <div class="kpi-box"><div class="kpi-val">${score >= 70 ? '1' : '0'}</div><div class="kpi-label">Open Tickets</div></div>
+                    </div>
+                </div>
+                <div style="text-align:right;flex-shrink:0;">
+                    <div style="font-size:0.68rem;color:var(--secondary-text);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">Risk Status</div>
+                    <div style="font-weight:700;font-size:0.9rem;">${escapeHTML(risk)}</div>
+                    <a href="reports.html" style="display:inline-block;margin-top:0.5rem;font-size:0.78rem;padding:0.4rem 0.8rem;border:1px solid var(--border-color);border-radius:6px;color:var(--text-color);text-decoration:none;"><i class="bx bx-table"></i> View Reports</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div style="display:flex;flex-direction:column;gap:1.5rem;">
+                <!-- Risk Trend -->
+                <div class="glass">
+                    <h3 style="margin-bottom:1rem;font-size:1rem;">Churn Risk Score — Trend (Estimated)</h3>
+                    <canvas id="trendChart" height="130"></canvas>
+                </div>
+                <!-- Metadata fields -->
+                <div class="glass">
+                    <h3 style="margin-bottom:0.85rem;font-size:1rem;">Dataset Fields</h3>
+                    ${metaHtml || '<p style="font-size:0.82rem;color:var(--secondary-text);">No additional metadata available.</p>'}
+                </div>
+                <!-- Linked Tickets -->
+                <div class="glass">
+                    <h3 style="margin-bottom:0.85rem;font-size:1rem;">Linked Support Tickets</h3>
+                    ${score >= 70 ? `<div class="linked-ticket"><div style="width:8px;height:8px;border-radius:50%;background:var(--risk-red);flex-shrink:0;"></div><div style="flex:1;"><div style="font-size:0.84rem;font-weight:600;">High churn risk — follow-up required</div><div style="font-size:0.72rem;color:var(--secondary-text);">Auto-generated · Score: ${score}%</div></div><span class="score-badge badge-high">Open</span></div>` : `<p style="font-size:0.82rem;color:var(--secondary-text);">No open tickets for this customer.</p>`}
+                    <a href="helpdesk.html" style="font-size:0.8rem;color:var(--risk-blue);text-decoration:none;"><i class="bx bx-support"></i> View All Tickets</a>
+                </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:1.5rem;">
+                <!-- Quick Actions -->
+                <div class="glass">
+                    <h3 style="margin-bottom:1rem;font-size:1rem;">Quick Actions</h3>
+                    <button class="action-btn primary" onclick="sendRetentionEmail(this)"><i class='bx bx-envelope'></i> Send Retention Email</button>
+                    <button class="action-btn" onclick="createSupportTicket(this)"><i class='bx bx-plus'></i> Create Support Ticket</button>
+                    <button class="action-btn" onclick="sendDiscountOffer(this)"><i class='bx bx-gift'></i> Log Discount Offer</button>
+                    <a href="grow.html" class="action-btn"><i class='bx bx-bot'></i> AI Campaign Strategy</a>
+                </div>
+                <!-- Timeline -->
+                <div class="glass" style="flex:1;">
+                    <h3 style="margin-bottom:1rem;font-size:1rem;">Activity Timeline</h3>
+                    <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:${ac(risk)};"></div><div class="tl-line"></div></div><div><div class="tl-title"><i class="bx bx-error-circle" style="color:${ac(risk)};vertical-align:middle;"></i> Churn score: ${score}%</div><div class="tl-desc">ML model prediction - risk level: ${escapeHTML(risk)}</div><div class="tl-time">Updated ${escapeHTML(updatedAt)}</div></div></div>
+                    <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--risk-blue);"></div><div class="tl-line"></div></div><div><div class="tl-title"><i class="bx bx-data" style="color:var(--risk-blue);vertical-align:middle;"></i> Record imported</div><div class="tl-desc">Customer added to CRIP from CSV upload</div><div class="tl-time">Since ${escapeHTML(since)}</div></div></div>
+                    <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--secondary-text);"></div></div><div><div class="tl-title"><i class="bx bx-building" style="color:var(--secondary-text);vertical-align:middle;"></i> Segment: ${escapeHTML(seg)}</div><div class="tl-desc">Industry classification from dataset</div><div class="tl-time">-</div></div></div>
+                </div>
+            </div>
+        </div>`;
+
+        const weeks = ['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10'];
+        new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: { labels: weeks, datasets: [{ label: 'Churn Risk %', data: trend, borderColor: '#ff3333', backgroundColor: 'rgba(255,51,51,0.1)', fill: true, tension: 0.4, pointRadius: 3, borderWidth: 2 }] },
+            options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, max: 100 } } }
+        });
+    }
+
+    loadProfile();
+    </script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Future Scope — CRIP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { min-height: 100vh; font-family: 'Poppins', sans-serif; }
+        #vanta-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        nav { position: relative; z-index: 10; }
+
+        .page-wrapper {
+            position: relative; z-index: 5;
+            max-width: 1100px; margin: 0 auto;
+            padding: 100px 2rem 3rem;
+        }
+
+        .hero-banner {
+            text-align: center; margin-bottom: 3rem;
+        }
+        .hero-banner h1 {
+            font-size: 2.2rem; font-weight: 800;
+            background: linear-gradient(135deg, #7c3aed, #4facfe, #22c55e);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .hero-banner p {
+            color: var(--secondary-text); font-size: 0.95rem; line-height: 1.6;
+            max-width: 640px; margin: 0 auto;
+        }
+
+        .roadmap-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem; margin-bottom: 3rem;
+        }
+
+        .roadmap-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 1.75rem;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative; overflow: hidden;
+        }
+        .roadmap-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+        }
+        .roadmap-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: var(--card-accent, linear-gradient(90deg, #7c3aed, #4facfe));
+        }
+
+        .phase-badge {
+            display: inline-block; font-size: 0.65rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            padding: 0.2rem 0.6rem; border-radius: 50px;
+            background: rgba(124,58,237,0.12); color: #a78bfa;
+            margin-bottom: 0.75rem;
+        }
+
+        .roadmap-card .icon-circle {
+            width: 48px; height: 48px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; margin-bottom: 1rem;
+        }
+
+        .roadmap-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .roadmap-card p { font-size: 0.82rem; color: var(--secondary-text); line-height: 1.65; }
+
+        .timeline-section {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 2rem;
+            backdrop-filter: blur(20px);
+        }
+        .timeline-section h2 { font-size: 1.3rem; margin-bottom: 1.5rem; }
+
+        .timeline {
+            position: relative; padding-left: 2rem;
+        }
+        .timeline::before {
+            content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+            width: 2px; background: linear-gradient(to bottom, #7c3aed, #4facfe, #22c55e);
+        }
+
+        .timeline-item {
+            position: relative; margin-bottom: 1.5rem; padding-left: 1.5rem;
+        }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -1.55rem; top: 6px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #7c3aed; border: 2px solid var(--card-bg);
+        }
+        .timeline-item:nth-child(2)::before { background: #4facfe; }
+        .timeline-item:nth-child(3)::before { background: #22c55e; }
+        .timeline-item:nth-child(4)::before { background: #f59e0b; }
+
+        .timeline-item h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.2rem; }
+        .timeline-item p { font-size: 0.78rem; color: var(--secondary-text); }
+    </style>
+</head>
+<body>
+    <div id="vanta-bg"></div>
+
+    <nav>
+        <div class="nav-left">
+            <a href="getstarted.html" style="text-decoration:none;">
+                <div class="logo" style="display:flex;align-items:center;">
+                    <img src="logo.png" alt="CRIP" style="height:38px;">
+                </div>
+            </a>
+        </div>
+        <div class="nav-center">
+            <a href="home.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="reports.html">Reports</a>
+            <a href="grow.html">Grow Corner</a>
+            <a href="profile.html">Profile</a>
+        </div>
+        <div class="nav-right">
+            <button class="theme-toggle" id="theme-toggle" title="Toggle Theme"><i class='bx bx-moon'></i></button>
+            <button class="cta-btn" id="signout-btn" onclick="localStorage.clear();window.location.href='login.html';" style="padding:0.5rem 1.2rem;font-size:0.85rem;"><i class='bx bx-log-out'></i> Sign Out</button>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="hero-banner">
+            <h1><i class='bx bx-rocket'></i> Future Scope & Roadmap</h1>
+            <p>Planned enhancements and next-generation features that will expand CRIP into a comprehensive, enterprise-grade customer intelligence platform.</p>
+        </div>
+
+        <div class="roadmap-grid">
+            <!-- Card 1 -->
+            <div class="roadmap-card" style="--card-accent: linear-gradient(90deg, #7c3aed, #a78bfa);">
+                <span class="phase-badge">Phase 1</span>
+                <div class="icon-circle" style="background:rgba(124,58,237,0.1); color:#a78bfa;">
+                    <i class='bx bx-mobile-alt'></i>
+                </div>
+                <h3>Mobile Application</h3>
+                <p>Cross-platform mobile app built with React Native / Flutter for on-the-go churn monitoring, push notifications for risk alerts, and offline-capable customer dashboards.</p>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="roadmap-card" style="--card-accent: linear-gradient(90deg, #4facfe, #00f2fe);">
+                <span class="phase-badge" style="background:rgba(79,172,254,0.12); color:#4facfe;">Phase 1</span>
+                <div class="icon-circle" style="background:rgba(79,172,254,0.1); color:#4facfe;">
+                    <i class='bx bx-line-chart'></i>
+                </div>
+                <h3>Real-Time Analytics</h3>
+                <p>Live streaming data pipeline powered by Apache Kafka and WebSocket integration for instant risk score updates, real-time dashboard refresh, and event-driven alerts.</p>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="roadmap-card" style="--card-accent: linear-gradient(90deg, #f59e0b, #fbbf24);">
+                <span class="phase-badge" style="background:rgba(245,158,11,0.12); color:#f59e0b;">Phase 2</span>
+                <div class="icon-circle" style="background:rgba(245,158,11,0.1); color:#f59e0b;">
+                    <i class='bx bx-brain'></i>
+                </div>
+                <h3>Advanced Deep Learning</h3>
+                <p>LSTM and Transformer-based temporal models for sequence-aware churn prediction, capturing customer behavior patterns over time with attention mechanisms.</p>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="roadmap-card" style="--card-accent: linear-gradient(90deg, #22c55e, #4ade80);">
+                <span class="phase-badge" style="background:rgba(34,197,94,0.12); color:#22c55e;">Phase 2</span>
+                <div class="icon-circle" style="background:rgba(34,197,94,0.1); color:#22c55e;">
+                    <i class='bx bx-mail-send'></i>
+                </div>
+                <h3>Automated Marketing Workflows</h3>
+                <p>Trigger-based drip campaigns with dynamic content personalization, A/B testing automation, and ML-optimized send-time scheduling for maximum engagement.</p>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="roadmap-card" style="--card-accent: linear-gradient(90deg, #ef4444, #f87171);">
+                <span class="phase-badge" style="background:rgba(239,68,68,0.12); color:#ef4444;">Phase 3</span>
+                <div class="icon-circle" style="background:rgba(239,68,68,0.1); color:#ef4444;">
+                    <i class='bx bx-cloud'></i>
+                </div>
+                <h3>Multi-Tenant SaaS Deployment</h3>
+                <p>Cloud-native architecture with Kubernetes orchestration, auto-scaling, tenant isolation, role-based access control, and white-label customization.</p>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="roadmap-card" style="--card-accent: linear-gradient(90deg, #ec4899, #f472b6);">
+                <span class="phase-badge" style="background:rgba(236,72,153,0.12); color:#ec4899;">Phase 3</span>
+                <div class="icon-circle" style="background:rgba(236,72,153,0.1); color:#ec4899;">
+                    <i class='bx bx-plug'></i>
+                </div>
+                <h3>Third-Party CRM Integration</h3>
+                <p>Native connectors for Salesforce, HubSpot, Zoho, and Freshdesk — enabling bidirectional data sync, unified customer views, and workflow automation.</p>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline-section">
+            <h2><i class='bx bx-calendar-event' style="color:#4facfe;"></i> Development Timeline</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>Phase 1 — Q3 2025</h4>
+                    <p>Mobile app MVP + Real-time analytics pipeline integration</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Phase 2 — Q4 2025</h4>
+                    <p>Deep learning model deployment + Automated marketing workflows</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Phase 3 — Q1 2026</h4>
+                    <p>Multi-tenant SaaS architecture + Third-party CRM integrations</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Production Release — Q2 2026</h4>
+                    <p>Full enterprise release with all features, comprehensive documentation, and SLA guarantees</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="nav.js"></script>
+</body>
+</html>

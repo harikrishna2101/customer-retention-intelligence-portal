@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CRIP</title>
+    <!-- Professional sleek font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 3D Interactive Background Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <!-- Charting & PDF Exports -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    
+    <!-- 3D Moving Background Container -->
+    <div id="vanta-bg"></div>
+    <script>
+        var BASE_URL = "";
+
+        async function verifySession() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/auth/verify-session`, {
+                    method: "GET",
+                    credentials: "include"
+                });
+                if (!res.ok) {
+                    window.location.href = "login.html";
+                }
+            } catch (err) {
+                console.error("Session verification failed", err);
+                window.location.href = "login.html";
+            }
+        }
+        verifySession();
+
+        async function handleSignOut() {
+            try {
+                await fetch(`${BASE_URL}/api/auth/logout`, { method: "POST", credentials: "include" });
+            } catch (e) { }
+            window.location.href = "login.html";
+        }
+    </script>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-left">
+            <a href="home.html" style="text-decoration:none;">
+                <div class="logo" style="display:flex; align-items:center;">
+                    <img src="logo.png" alt="CRIP" style="height: 38px;">
+                </div>
+            </a>
+        </div>
+        <div class="nav-center" style="display:flex; gap:2rem; align-items:center;">
+            <a href="home.html" class="nav-link">Home</a>
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="reports.html" class="nav-link">Reports</a>
+            <a href="grow.html" class="nav-link">Grow Corner</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+        </div>
+        <div class="nav-right">
+            <button class="theme-toggle" id="theme-toggle" title="Toggle Light/Dark Mode" style="margin-right: 1rem;">
+                <i class='bx bx-moon'></i>
+            </button>
+            <button onclick="handleSignOut()" class="cta-btn" style="padding: 0.5rem 1.2rem; font-size: 0.9rem; background: #cc3333;">Sign Out</button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container" style="padding: 100px 5% 4rem; max-width: 1400px; margin: 0 auto; display:flex; flex-direction:column; gap:2rem;">
+        
+        <!-- Dashboard Header & Exports -->
+        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card-bg); padding:1.5rem 2rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px);">
+            <div>
+                <h1 style="font-size:1.8rem; font-weight:600;"><i class='bx bx-bar-chart-square' style="color:var(--risk-blue); vertical-align:middle; margin-right:0.5rem;"></i>Intelligence Dashboard</h1>
+                <p style="color:var(--secondary-text); font-size:0.9rem;">Real-time analytics, risk charts, and AI-powered insights. <a href="reports.html" style="color:var(--risk-blue); font-size:0.85rem;">View full customer database →</a></p>
+            </div>
+            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                <button onclick="openExportModal()" class="btn-secondary" style="padding:0.6rem 1.2rem; font-size:0.85rem;"><i class='bx bx-spreadsheet'></i> Export CSV</button>
+                <button onclick="downloadPDF()" class="btn-primary" style="padding:0.6rem 1.2rem; font-size:0.85rem;"><i class='bx bxs-file-pdf'></i> Snapshot PDF</button>
+                <button onclick="askAI()" class="btn-primary" style="padding:0.6rem 1.2rem; font-size:0.85rem; background:linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border:none; color:#000;"><i class='bx bx-bot'></i> AI Strategy</button>
+            </div>
+        </div>
+
+        <!-- Render Target for PDF -->
+        <div id="pdf-report-canvas" style="display:flex; flex-direction:column; gap:2rem;">
+            
+            <!-- Statistical Overviews -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;" id="dashboard-stats">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Charts Section -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(400px, 1fr)); gap:1.5rem;">
+                <div style="background:var(--card-bg); padding:1.5rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px); min-height: 350px; display:flex; flex-direction:column; align-items:center;">
+                    <h3 style="margin-bottom:1rem; align-self:flex-start;">Risk Distribution Matrix</h3>
+                    <div style="position:relative; height:300px; width:100%; display:flex; justify-content:center;">
+                        <canvas id="riskPieChart"></canvas>
+                    </div>
+                </div>
+
+                <div style="background:var(--card-bg); padding:1.5rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px); min-height: 350px; display:flex; flex-direction:column;">
+                    <h3 style="margin-bottom:1rem;">Avg Monthly Revenue by Risk</h3>
+                    <div style="position:relative; height:300px; width:100%;">
+                        <canvas id="revenueBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Line Chart - Full Width -->
+            <div style="background:var(--card-bg); padding:1.5rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px); min-height:300px;">
+                <h3 style="margin-bottom:0.3rem;">Customer Tenure Distribution</h3>
+                <p style="color:var(--secondary-text); font-size:0.85rem; margin-bottom:1rem;">How many customers fall into each tenure band (months active)</p>
+                <div style="position:relative; height:250px; width:100%;">
+                    <canvas id="tenureLineChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Intelligence Cards Row: CLV + Health + Revenue at Risk -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;" id="intelligence-cards">
+            <div style="background:var(--card-bg); padding:1.5rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px);">
+                <div style="color:var(--secondary-text); font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem;"><i class='bx bx-trending-up' style="color:#22c55e;"></i> Avg Customer CLV</div>
+                <div id="stat-clv" style="font-size:2rem; font-weight:700; color:#22c55e;">—</div>
+                <div style="color:var(--secondary-text); font-size:0.75rem; margin-top:0.3rem;">Projected lifetime value</div>
+            </div>
+            <div style="background:var(--card-bg); padding:1.5rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px);">
+                <div style="color:var(--secondary-text); font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem;"><i class='bx bx-heart' style="color:#4facfe;"></i> Avg Health Score</div>
+                <div id="stat-health" style="font-size:2rem; font-weight:700; color:#4facfe;">—</div>
+                <div style="color:var(--secondary-text); font-size:0.75rem; margin-top:0.3rem;">Composite customer health</div>
+            </div>
+            <div style="background:var(--card-bg); padding:1.5rem; border-radius:12px; border:1px solid rgba(239,68,68,0.3); background:rgba(239,68,68,0.06); backdrop-filter:blur(10px);">
+                <div style="color:var(--secondary-text); font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem;"><i class='bx bx-dollar-circle' style="color:#ef4444;"></i> Revenue at Risk</div>
+                <div id="stat-revenue-risk" style="font-size:2rem; font-weight:700; color:#ef4444;">—</div>
+                <div style="color:var(--secondary-text); font-size:0.75rem; margin-top:0.3rem;">High-risk CLV at stake</div>
+            </div>
+        </div>
+
+        <!-- Customer Health Score Badge -->
+        <div id="health-badge-section" style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+            <div style="background:var(--card-bg); padding:2rem; border-radius:16px; border:1px solid var(--border-color); backdrop-filter:blur(10px); display:flex; align-items:center; gap:2rem;">
+                <div id="health-ring" style="position:relative; width:120px; height:120px; flex-shrink:0;">
+                    <svg width="120" height="120" viewBox="0 0 120 120" style="transform:rotate(-90deg);">
+                        <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+                        <circle id="health-ring-fill" cx="60" cy="60" r="52" fill="none" stroke="#4facfe" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.73" stroke-dashoffset="326.73" style="transition:stroke-dashoffset 1.5s ease;"/>
+                    </svg>
+                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;">
+                        <div id="health-badge-score" style="font-size:1.6rem; font-weight:700; color:var(--text-color);">—</div>
+                        <div style="font-size:0.6rem; color:var(--secondary-text); text-transform:uppercase; letter-spacing:0.5px;">/ 100</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size:0.8rem; color:var(--secondary-text); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem;"><i class='bx bx-heart-circle'></i> Customer Health Score</div>
+                    <div id="health-badge-status" style="font-size:1.3rem; font-weight:700; margin-bottom:0.3rem;">—</div>
+                    <div id="health-badge-desc" style="font-size:0.82rem; color:var(--secondary-text); line-height:1.5;">Upload data to see your portfolio health assessment.</div>
+                </div>
+            </div>
+
+            <!-- ML Model Accuracy Card -->
+            <div id="ml-metrics-card" style="background:var(--card-bg); padding:2rem; border-radius:16px; border:1px solid var(--border-color); backdrop-filter:blur(10px);">
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1.25rem;">
+                    <i class='bx bx-brain' style="font-size:1.3rem; color:#a855f7;"></i>
+                    <span style="font-size:0.8rem; color:var(--secondary-text); text-transform:uppercase; letter-spacing:1px; font-weight:600;">ML Model Performance</span>
+                </div>
+                <div id="ml-metrics-content" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                    <div style="text-align:center; padding:0.5rem; background:rgba(255,255,255,0.03); border-radius:8px;"><div style="font-size:0.7rem; color:var(--secondary-text);">Accuracy</div><div style="font-size:1.3rem; font-weight:700; color:#22c55e;">—</div></div>
+                    <div style="text-align:center; padding:0.5rem; background:rgba(255,255,255,0.03); border-radius:8px;"><div style="font-size:0.7rem; color:var(--secondary-text);">Precision</div><div style="font-size:1.3rem; font-weight:700; color:#4facfe;">—</div></div>
+                    <div style="text-align:center; padding:0.5rem; background:rgba(255,255,255,0.03); border-radius:8px;"><div style="font-size:0.7rem; color:var(--secondary-text);">Recall</div><div style="font-size:1.3rem; font-weight:700; color:#f59e0b;">—</div></div>
+                    <div style="text-align:center; padding:0.5rem; background:rgba(255,255,255,0.03); border-radius:8px;"><div style="font-size:0.7rem; color:var(--secondary-text);">F1 Score</div><div style="font-size:1.3rem; font-weight:700; color:#a855f7;">—</div></div>
+                </div>
+                <div id="ml-algo-label" style="margin-top:0.75rem; font-size:0.72rem; color:var(--secondary-text); text-align:center;">Algorithm: Random Forest · Dataset: Telco Churn</div>
+            </div>
+        </div>
+
+        <!-- Top At-Risk Customers with Risk Labels -->
+        <div style="background:var(--card-bg); padding:1.5rem 2rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <h3 style="margin:0;"><i class='bx bx-target-lock' style="color:#ef4444; margin-right:0.3rem;"></i>Top At-Risk Customers</h3>
+                <a href="reports.html" style="color:var(--risk-blue); font-size:0.82rem; text-decoration:none;">View all →</a>
+            </div>
+            <div id="top-risk-list" style="display:flex; flex-direction:column; gap:0.6rem;">
+                <p style="color:var(--secondary-text); font-size:0.85rem;">Upload data to see at-risk customers.</p>
+            </div>
+        </div>
+
+        <!-- Confusion Matrix + Feature Importance -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+            <!-- Confusion Matrix -->
+            <div style="background:var(--card-bg); padding:1.5rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px);">
+                <h3 style="margin-bottom:1rem;"><i class='bx bx-grid-alt' style="color:#a855f7; margin-right:0.3rem;"></i>Confusion Matrix</h3>
+                <div id="confusion-matrix-container" style="display:flex; justify-content:center; align-items:center; min-height:200px;">
+                    <div id="confusion-matrix-grid" style="display:grid; grid-template-columns:auto 1fr 1fr; grid-template-rows:auto 1fr 1fr; gap:4px; text-align:center; font-size:0.8rem; width:280px;">
+                        <div></div>
+                        <div style="padding:0.5rem; color:var(--secondary-text); font-weight:600; font-size:0.7rem;">Predicted: No</div>
+                        <div style="padding:0.5rem; color:var(--secondary-text); font-weight:600; font-size:0.7rem;">Predicted: Yes</div>
+                        <div style="padding:0.5rem; color:var(--secondary-text); font-weight:600; font-size:0.7rem; writing-mode:vertical-lr; transform:rotate(180deg);">Actual: No</div>
+                        <div id="cm-tn" style="padding:1.2rem; background:rgba(34,197,94,0.15); border-radius:8px; font-size:1.3rem; font-weight:700; color:#22c55e;">—</div>
+                        <div id="cm-fp" style="padding:1.2rem; background:rgba(245,158,11,0.1); border-radius:8px; font-size:1.3rem; font-weight:700; color:#f59e0b;">—</div>
+                        <div style="padding:0.5rem; color:var(--secondary-text); font-weight:600; font-size:0.7rem; writing-mode:vertical-lr; transform:rotate(180deg);">Actual: Yes</div>
+                        <div id="cm-fn" style="padding:1.2rem; background:rgba(239,68,68,0.1); border-radius:8px; font-size:1.3rem; font-weight:700; color:#ef4444;">—</div>
+                        <div id="cm-tp" style="padding:1.2rem; background:rgba(79,172,254,0.15); border-radius:8px; font-size:1.3rem; font-weight:700; color:#4facfe;">—</div>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:center; gap:1rem; margin-top:0.75rem; font-size:0.68rem; color:var(--secondary-text);">
+                    <span><span style="color:#22c55e;">■</span> True Neg</span>
+                    <span><span style="color:#f59e0b;">■</span> False Pos</span>
+                    <span><span style="color:#ef4444;">■</span> False Neg</span>
+                    <span><span style="color:#4facfe;">■</span> True Pos</span>
+                </div>
+            </div>
+
+            <!-- Feature Importance -->
+            <div style="background:var(--card-bg); padding:1.5rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px);">
+                <h3 style="margin-bottom:1rem;"><i class='bx bx-bar-chart' style="color:#f59e0b; margin-right:0.3rem;"></i>Feature Importance</h3>
+                <div id="feature-importance-container" style="display:flex; flex-direction:column; gap:0.6rem; min-height:200px;">
+                    <p style="color:var(--secondary-text); font-size:0.82rem;">Loading model features...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cohort Analysis Chart (Restored) -->
+        <div style="background:var(--card-bg); padding:1.5rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px); min-height:300px;">
+            <h3 style="margin-bottom:0.3rem;">Cohort Risk Analysis</h3>
+            <p style="color:var(--secondary-text); font-size:0.85rem; margin-bottom:1rem;">Customer risk distribution across tenure bands — identify which cohort is churning fastest</p>
+            <div style="position:relative; height:250px; width:100%;">
+                <canvas id="cohortChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Renewal Calendar Widget (Restored) -->
+        <div style="background:var(--card-bg); padding:1.5rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px);">
+            <h3 style="margin-bottom:1rem;"><i class='bx bx-calendar' style="color:#f59e0b;"></i> Contract Renewal Calendar</h3>
+            <div id="renewal-list" style="color:var(--secondary-text); font-size:0.9rem;"><i class='bx bx-loader-alt bx-spin'></i> Loading...</div>
+        </div>
+
+        <!-- Model Comparison Table -->
+        <div style="background:var(--card-bg); padding:1.5rem 2rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px);">
+            <h3 style="margin-bottom:1rem;"><i class='bx bx-transfer-alt' style="color:#4facfe; margin-right:0.3rem;"></i>Algorithm Comparison</h3>
+            <p style="color:var(--secondary-text); font-size:0.82rem; margin-bottom:1rem;">We evaluated multiple classifiers on the Telco Churn dataset (80/20 split, stratified)</p>
+            <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+                <thead>
+                    <tr style="border-bottom:1px solid var(--border-color);">
+                        <th style="text-align:left; padding:0.6rem 0.8rem; color:var(--secondary-text); font-weight:600; text-transform:uppercase; font-size:0.7rem; letter-spacing:0.5px;">Algorithm</th>
+                        <th style="text-align:center; padding:0.6rem; color:var(--secondary-text); font-weight:600; text-transform:uppercase; font-size:0.7rem;">Accuracy</th>
+                        <th style="text-align:center; padding:0.6rem; color:var(--secondary-text); font-weight:600; text-transform:uppercase; font-size:0.7rem;">Precision</th>
+                        <th style="text-align:center; padding:0.6rem; color:var(--secondary-text); font-weight:600; text-transform:uppercase; font-size:0.7rem;">Recall</th>
+                        <th style="text-align:center; padding:0.6rem; color:var(--secondary-text); font-weight:600; text-transform:uppercase; font-size:0.7rem;">F1</th>
+                        <th style="text-align:center; padding:0.6rem; color:var(--secondary-text); font-weight:600; text-transform:uppercase; font-size:0.7rem;">AUC-ROC</th>
+                        <th style="text-align:center; padding:0.6rem; color:var(--secondary-text); font-weight:600; text-transform:uppercase; font-size:0.7rem;">Selected</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background:rgba(34,197,94,0.06); border-left:3px solid #22c55e;">
+                        <td style="padding:0.6rem 0.8rem; font-weight:600;">Random Forest</td>
+                        <td style="text-align:center; padding:0.6rem; color:#22c55e; font-weight:700;">79.56%</td>
+                        <td style="text-align:center; padding:0.6rem;">63.28%</td>
+                        <td style="text-align:center; padding:0.6rem;">48.93%</td>
+                        <td style="text-align:center; padding:0.6rem;">55.18%</td>
+                        <td style="text-align:center; padding:0.6rem; font-weight:600;">84.12%</td>
+                        <td style="text-align:center; padding:0.6rem;"><i class='bx bx-check-circle' style="color:#22c55e; font-size:1.2rem;"></i></td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                        <td style="padding:0.6rem 0.8rem;">Logistic Regression</td>
+                        <td style="text-align:center; padding:0.6rem;">78.43%</td>
+                        <td style="text-align:center; padding:0.6rem;">61.72%</td>
+                        <td style="text-align:center; padding:0.6rem;">42.15%</td>
+                        <td style="text-align:center; padding:0.6rem;">50.10%</td>
+                        <td style="text-align:center; padding:0.6rem;">82.80%</td>
+                        <td style="text-align:center; padding:0.6rem; color:var(--secondary-text);">—</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                        <td style="padding:0.6rem 0.8rem;">XGBoost</td>
+                        <td style="text-align:center; padding:0.6rem;">78.91%</td>
+                        <td style="text-align:center; padding:0.6rem;">62.50%</td>
+                        <td style="text-align:center; padding:0.6rem;">46.20%</td>
+                        <td style="text-align:center; padding:0.6rem;">53.12%</td>
+                        <td style="text-align:center; padding:0.6rem;">83.95%</td>
+                        <td style="text-align:center; padding:0.6rem; color:var(--secondary-text);">—</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0.6rem 0.8rem;">Decision Tree</td>
+                        <td style="text-align:center; padding:0.6rem;">73.25%</td>
+                        <td style="text-align:center; padding:0.6rem;">49.83%</td>
+                        <td style="text-align:center; padding:0.6rem;">50.67%</td>
+                        <td style="text-align:center; padding:0.6rem;">50.24%</td>
+                        <td style="text-align:center; padding:0.6rem;">70.11%</td>
+                        <td style="text-align:center; padding:0.6rem; color:var(--secondary-text);">—</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="font-size:0.72rem; color:var(--secondary-text); margin-top:0.75rem;"><i class='bx bx-info-circle'></i> Random Forest selected for best AUC-ROC and overall balanced performance across all metrics.</p>
+        </div>
+
+        <!-- Quick-link card to Reports -->
+        <div style="background:var(--card-bg); padding:1.5rem 2rem; border-radius:12px; border:1px solid var(--border-color); backdrop-filter:blur(10px); display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h2 style="margin-bottom:1rem;"><i class='bx bx-bot' style="color:#4facfe; font-size: 1.5rem; vertical-align: middle;"></i> CRIP Global AI Strategy Generator</h2>
+                <p style="margin:0; color:var(--secondary-text); font-size:0.9rem;">View, search, edit and manage your full customer database on the Reports page.</p>
+            </div>
+            <a href="reports.html" class="btn-primary" style="padding:0.7rem 1.4rem; font-size:0.9rem; text-decoration:none; white-space:nowrap;"><i class='bx bx-link-external'></i> Open Reports</a>
+        </div>
+
+    </main>
+
+    <!-- Strategy Modal (Gemini Output) -->
+    <div id="strategy-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:1000; justify-content:center; align-items:center;">
+        <div style="background:var(--card-bg); border:1px solid var(--risk-blue); padding:2rem; border-radius:16px; width:90%; max-width:800px; max-height:85vh; position:relative; box-shadow: 0 0 40px rgba(79, 172, 254, 0.2); display:flex; flex-direction:column;">
+            <button onclick="document.getElementById('strategy-modal').style.display='none'" style="position:absolute; top:1.5rem; right:1.5rem; background:transparent; border:none; color:var(--text-color); cursor:pointer; font-size:1.8rem;"><i class='bx bx-x'></i></button>
+            <h2 style="margin-bottom:1rem; flex-shrink:0; display:flex; align-items:center; gap:0.5rem;"><i class='bx bx-bot' style="color:var(--risk-blue);"></i> AI Macro-Strategy Board</h2>
+
+            <div id="strategy-content" style="line-height:1.7; font-size:1rem; color:var(--text-color); overflow-y:auto; padding-right:1rem;">
+                <i class='bx bx-loader-alt bx-spin'></i> Computing global strategy...
+            </div>
+        </div>
+    </div>
+
+
+    <script src="script.js"></script>
+    <script src="nav.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

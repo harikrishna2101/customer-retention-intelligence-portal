@@ -1,0 +1,337 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - CRIP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 3D Interactive Background Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <style>
+        .profile-container {
+            padding: 100px 5% 4rem;
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem 3rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        
+        [data-theme='dark'] .card {
+            background: rgba(15, 15, 15, 0.75);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            padding: 0.9rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+        }
+        
+        .form-group input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .danger-zone {
+            border: 1px solid var(--risk-red) !important;
+            background: rgba(255, 51, 51, 0.05) !important;
+        }
+
+        .danger-zone h2 {
+            color: var(--risk-red);
+        }
+
+        .btn-primary {
+            padding: 0.9rem 2rem;
+            background: var(--text-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        
+        .btn-danger {
+            background: var(--risk-red) !important;
+            color: #fff !important;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--text-color);
+            color: var(--bg-color);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            max-width: 340px;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.error { background: var(--risk-red); color: #fff; }
+        .toast.success { background: var(--risk-green); color: #fff; }
+    </style>
+</head>
+<body>
+
+    <!-- 3D Moving Background Container -->
+    <div id="vanta-bg"></div>
+    <script>
+        var BASE_URL = "";
+
+        async function verifySession() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/auth/verify-session`, {
+                    method: "GET",
+                    credentials: "include"
+                });
+                if (!res.ok) {
+                    window.location.href = "login.html";
+                    return null;
+                }
+                const data = await res.json();
+                return data.user;
+            } catch (err) {
+                window.location.href = "login.html";
+            }
+        }
+
+        async function handleSignOut() {
+            try {
+                await fetch(`${BASE_URL}/api/auth/logout`, { method: "POST", credentials: "include" });
+            } catch (e) { }
+            window.location.href = "login.html";
+        }
+    </script>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-left">
+            <a href="home.html" style="text-decoration:none;">
+                <div class="logo" style="display:flex; align-items:center;">
+                    <img src="logo.png" alt="CRIP" style="height: 38px;">
+                </div>
+            </a>
+        </div>
+        <div class="nav-center" style="display:flex; gap:2rem; align-items:center;">
+            <a href="home.html" class="nav-link">Home</a>
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="reports.html" class="nav-link">Reports</a>
+            <a href="grow.html" class="nav-link">Grow Corner</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+        </div>
+        <div class="nav-right">
+            <button class="theme-toggle" id="theme-toggle" title="Toggle Light/Dark Mode" style="margin-right: 1rem;">
+                <i class='bx bx-moon'></i>
+            </button>
+            <button onclick="handleSignOut()" class="cta-btn"
+                style="padding:0.5rem 1.2rem; font-size:0.9rem; background:#cc3333; border:none; cursor:pointer;">
+                Sign Out
+            </button>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <div class="card">
+            <h2><i class='bx bx-user-circle' style="color:var(--risk-blue);"></i> Account Details</h2>
+            <form id="profile-form" onsubmit="handleProfileUpdate(event)">
+                <div class="form-group">
+                    <label>Email Address (Cannot be changed)</label>
+                    <input type="email" id="pf-email" disabled value="Loading...">
+                </div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="pf-name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Organization Name</label>
+                    <input type="text" id="pf-org" required placeholder="Acme Corp">
+                </div>
+                <div class="form-group">
+                    <label>Industry</label>
+                    <input type="text" id="pf-ind" required placeholder="Technology">
+                </div>
+                <button type="submit" class="btn-primary" id="btn-save-profile" style="margin-top: 1rem;">
+                    <i class='bx bx-save'></i> Save Changes
+                </button>
+            </form>
+        </div>
+
+        <div class="card danger-zone">
+            <h2><i class='bx bx-error' ></i> Danger Zone</h2>
+            <p style="color: var(--secondary-text); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                Once you delete your dataset, there is no going back. All tracked customer models, AI campaign statuses, and risk profiles will be permanently purged from the system.
+            </p>
+            <button class="btn-primary btn-danger" onclick="document.getElementById('purge-modal').style.display='flex'">
+                <i class='bx bx-trash'></i> Delete All Data
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class='bx bx-info-circle'></i>
+        <span id="toast-msg">Operation successful</span>
+    </div>
+
+    <!-- Purge Confirmation Modal -->
+    <div id="purge-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-color); padding:2.5rem; border-radius:12px; border:1px solid var(--risk-red); width:100%; max-width:450px; text-align:center;">
+            <i class='bx bx-error-circle' style="font-size:4rem; color:var(--risk-red); margin-bottom:1rem;"></i>
+            <h2 style="margin-bottom:1rem;">Are you absolutely sure?</h2>
+            <p style="color:var(--secondary-text); font-size:0.95rem; margin-bottom:2rem;">
+                This action is destructive and will completely wipe all customer data associated with your account.
+            </p>
+            <div style="display:flex; gap:1rem;">
+                <button onclick="document.getElementById('purge-modal').style.display='none'" class="btn-primary" style="flex:1; background:transparent; border:1px solid var(--border-color); color:var(--text-color);">Cancel</button>
+                <button onclick="executePurge()" id="btn-confirm-purge" class="btn-primary btn-danger" style="flex:1;">Yes, Purge Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="nav.js"></script>
+    <script>
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.className = `toast ${type}`;
+            document.getElementById('toast-msg').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        async function initProfile() {
+            const user = await verifySession();
+            if(!user) return;
+            
+            try {
+                const res = await fetch(`${BASE_URL}/api/auth/me`, { credentials: 'include' });
+                const parsed = await res.json();
+                if(parsed.success) {
+                    document.getElementById('pf-email').value = parsed.email || '';
+                    document.getElementById('pf-name').value = parsed.name || '';
+                    document.getElementById('pf-org').value = parsed.organization || '';
+                    document.getElementById('pf-ind').value = parsed.industry || '';
+                }
+            } catch(e) {
+                showToast("Failed to load profile details.", "error");
+            }
+        }
+
+        async function handleProfileUpdate(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-profile');
+            btn.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Saving...";
+            btn.disabled = true;
+
+            const name = document.getElementById('pf-name').value;
+            const organization = document.getElementById('pf-org').value;
+            const industry = document.getElementById('pf-ind').value;
+
+            try {
+                const res = await fetch(`${BASE_URL}/api/auth/profile`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    credentials: 'include',
+                    body: JSON.stringify({ name, organization, industry })
+                });
+                const data = await res.json();
+                if(res.ok && data.success) {
+                    showToast("Profile updated successfully!");
+                } else {
+                    showToast(data.message || "Update failed.", "error");
+                }
+            } catch(err) {
+                showToast("An error occurred.", "error");
+            } finally {
+                btn.innerHTML = "<i class='bx bx-save'></i> Save Changes";
+                btn.disabled = false;
+            }
+        }
+
+        async function executePurge() {
+            const btn = document.getElementById('btn-confirm-purge');
+            btn.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Purging...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${BASE_URL}/api/data/customers/all`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+                const data = await res.json();
+                if(res.ok && data.success) {
+                    document.getElementById('purge-modal').style.display='none';
+                    showToast("Dataset successfully purged from system.");
+                } else {
+                    showToast(data.message || "Failed to purge.", "error");
+                    document.getElementById('purge-modal').style.display='none';
+                }
+            } catch(err) {
+                showToast("An error occurred during purge.", "error");
+                document.getElementById('purge-modal').style.display='none';
+            } finally {
+                btn.innerHTML = "Yes, Purge Data";
+                btn.disabled = false;
+            }
+        }
+
+        initProfile();
+    </script>
+</body>
+</html>

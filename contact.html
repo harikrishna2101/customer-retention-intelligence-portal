@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact — CRIP</title>
+    <meta name="description" content="Reach the CRIP team for support, questions, or feedback. Based in Hyderabad, Telangana.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <style>
+        .contact-page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 120px 5% 4rem;
+        }
+        .contact-header { margin-bottom: 3rem; }
+        .contact-header h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing:-0.5px; }
+        .contact-header p { color: var(--secondary-text); font-size: 1rem; line-height: 1.7; max-width: 480px; }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 3rem;
+            align-items: start;
+        }
+        .contact-info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.25rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .info-row:first-child { padding-top: 0; }
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .info-row h4 { font-size: 0.82rem; color: var(--secondary-text); font-weight: 500; margin-bottom: 0.2rem; }
+        .info-row p { font-size: 0.9rem; font-weight: 500; }
+        .info-row a { color: var(--text-color); text-decoration: none; }
+        .info-row a:hover { color: #7c3aed; }
+
+        .contact-form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+        .contact-form-card h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--secondary-text); margin-bottom: 0.4rem; }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #7c3aed; }
+        .form-group textarea { resize: vertical; }
+        .submit-btn {
+            width: 100%;
+            padding: 0.85rem;
+            background: linear-gradient(135deg, #7c3aed, #4facfe);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .submit-btn:hover { opacity: 0.9; }
+
+        /* Footer */
+        .site-footer { border-top: 1px solid var(--border-color); padding: 2rem 5%; margin-top: 4rem; }
+        .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .footer-links { display: flex; gap: 1.5rem; }
+        .footer-links a { color: var(--secondary-text); text-decoration: none; font-size: 0.82rem; }
+        .footer-links a:hover { color: var(--text-color); }
+
+        @media (max-width: 768px) {
+            .contact-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="vanta-bg"></div>
+
+    <nav>
+        <div class="nav-left">
+            <a href="getstarted.html" style="text-decoration:none;">
+                <div class="logo" style="display:flex; align-items:center;">
+                    <img src="logo.png" alt="CRIP" style="height: 38px;">
+                </div>
+            </a>
+        </div>
+        <div class="nav-center" style="display:flex; gap:2rem;">
+            <a href="getstarted.html" class="nav-link">Home</a>
+            <a href="contact.html" class="nav-link" style="font-weight:600;">Contact</a>
+        </div>
+        <div class="nav-right">
+            <a href="signup.html" class="nav-link" style="margin-right:0.5rem;">Sign Up</a>
+            <a href="login.html" class="cta-btn" style="padding:0.5rem 1.2rem; font-size:0.9rem;">Log In</a>
+            <button class="theme-toggle" id="theme-toggle" title="Toggle Light/Dark Mode"><i class='bx bx-moon'></i></button>
+        </div>
+    </nav>
+
+    <main>
+        <div class="contact-page">
+            <div class="contact-header">
+                <h1>Get in Touch</h1>
+                <p>Have a question about CRIP, need help with your data, or want to report a bug? Reach us directly — we respond within 24 hours.</p>
+            </div>
+
+            <div class="contact-grid">
+                <!-- Contact Info -->
+                <div class="contact-info-card">
+                    <div class="info-row">
+                        <div class="info-icon" style="background:rgba(124,58,237,0.12);">
+                            <i class='bx bx-envelope' style="color:#7c3aed;"></i>
+                        </div>
+                        <div>
+                            <h4>Email</h4>
+                            <p><a href="mailto:cripiomp@gmail.com">cripiomp@gmail.com</a></p>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon" style="background:rgba(34,197,94,0.12);">
+                            <i class='bx bx-phone' style="color:#22c55e;"></i>
+                        </div>
+                        <div>
+                            <h4>Phone (India)</h4>
+                            <p><a href="tel:+916300242550">+91 63002 42550</a></p>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon" style="background:rgba(79,172,254,0.12);">
+                            <i class='bx bx-map' style="color:#4facfe;"></i>
+                        </div>
+                        <div>
+                            <h4>Location</h4>
+                            <p>MGIT, Gandipet<br>Hyderabad, Telangana — 500075</p>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon" style="background:rgba(245,158,11,0.12);">
+                            <i class='bx bx-time' style="color:#f59e0b;"></i>
+                        </div>
+                        <div>
+                            <h4>Response Time</h4>
+                            <p>Within 24 hours (IST)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="contact-form-card">
+                    <h2>Send a Message</h2>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" placeholder="Your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" placeholder="you@company.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" rows="5" placeholder="What can we help you with?" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <i class='bx bx-send'></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <span style="font-size:0.82rem; color:var(--secondary-text);"><strong style="color:var(--text-color);">CRIP</strong> — Customer Retention Intelligence Portal · Hyderabad, India</span>
+            <div class="footer-links">
+                <a href="getstarted.html">Home</a>
+                <a href="signup.html">Sign Up</a>
+                <a href="terms.html">Terms</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

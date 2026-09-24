@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grow Corner - CRIP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 3D Interactive Background Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <style>
+        .grow-container {
+            padding: 100px 5% 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .header-banner {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        [data-theme='dark'] .header-banner {
+            background: rgba(15, 15, 15, 0.75);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .header-banner h1 {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .header-banner p {
+            color: var(--secondary-text);
+            margin-top: 0.5rem;
+            max-width: 500px;
+        }
+
+        .campaign-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .campaign-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: transform 0.2s;
+        }
+
+        [data-theme='dark'] .campaign-card {
+            background: rgba(15, 15, 15, 0.75);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .campaign-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .c-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .c-id {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .c-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .c-badge.red { background: rgba(255, 51, 51, 0.1); color: var(--risk-red); border: 1px solid rgba(255,51,51,0.2); }
+        .c-badge.yellow { background: rgba(242, 186, 0, 0.1); color: var(--risk-yellow); border: 1px solid rgba(242,186,0,0.2); }
+
+        .c-reason {
+            font-size: 0.85rem;
+            color: var(--secondary-text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .email-draft {
+            background: var(--hover-bg);
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .email-draft strong { color: var(--text-color); }
+        .draft-body { margin-top: 0.5rem; color: var(--secondary-text); white-space: pre-wrap; }
+
+        .c-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: auto;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.7rem;
+            border-radius: 6px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+            transition: opacity 0.2s;
+        }
+
+        .btn-send {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+        .btn-send:hover { opacity: 0.8; }
+
+        .btn-skip {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+        .btn-skip:hover { background: var(--hover-bg); }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- 3D Moving Background Container -->
+    <div id="vanta-bg"></div>
+
+    <script>
+        var BASE_URL = "";
+        async function verifySession() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/auth/verify-session`, { method: "GET", credentials: "include" });
+                if (!res.ok) window.location.href = "login.html";
+            } catch (err) {
+                window.location.href = "login.html";
+            }
+        }
+
+        async function handleSignOut() {
+            try {
+                await fetch(`${BASE_URL}/api/auth/logout`, { method: "POST", credentials: "include" });
+            } catch (e) {}
+            window.location.href = "login.html";
+        }
+
+        verifySession();
+    </script>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-left">
+            <a href="home.html" style="text-decoration:none;">
+                <div class="logo" style="display:flex; align-items:center;">
+                    <img src="logo.png" alt="CRIP" style="height: 38px;">
+                </div>
+            </a>
+        </div>
+        <div class="nav-center" style="display:flex; gap:2rem; align-items:center;">
+            <a href="home.html" class="nav-link">Home</a>
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="reports.html" class="nav-link">Reports</a>
+            <a href="grow.html" class="nav-link">Grow Corner</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+        </div>
+        <div class="nav-right">
+            <button class="theme-toggle" id="theme-toggle"><i class='bx bx-moon'></i></button>
+            <button onclick="handleSignOut()" class="cta-btn" style="padding:0.5rem 1.2rem; font-size:0.9rem; background:#cc3333; border:none; cursor:pointer;">Sign Out</button>
+        </div>
+    </nav>
+
+    <div class="grow-container">
+        
+        <div class="header-banner">
+            <div>
+                <h1>Generative AI Retention</h1>
+                <p>The AI has analyzed your high-risk customers and generated personalized email outreach campaigns to prevent churn.</p>
+                <button id="dispatch-all-btn" class="btn-primary" style="margin-top: 1rem; padding: 0.6rem 1.2rem; display: none;" onclick="dispatchAllNuke()"><i class='bx bxs-paper-plane'></i> Dispatch All High-Risk Campaigns</button>
+            </div>
+            <i class='bx bx-bot' style="font-size: 3rem; color: var(--risk-blue);"></i>
+        </div>
+
+        <div class="campaign-grid" id="campaign-grid">
+            <p style="color:var(--secondary-text);">Loading AI Campaigns...</p>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script src="nav.js"></script>
+    <script>
+        function escapeAttr(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+        function escapeHTML(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        async function loadCampaigns() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/grow/campaigns`, { credentials: 'include' });
+                const data = await res.json();
+                
+                const grid = document.getElementById('campaign-grid');
+                grid.innerHTML = '';
+
+                if (!data.success || data.count === 0) {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; padding: 2rem; text-align:center; border: 1px dashed var(--border-color); border-radius:12px;">
+                        <i class='bx bx-check-shield' style="font-size:3rem; color:var(--risk-green);"></i>
+                        <h3 style="margin-top:1rem;">All Clear!</h3>
+                        <p style="color:var(--secondary-text); font-size:0.9rem;">No high-risk customers require immediate generative AI action at this time.</p>
+                    </div>`;
+                    return;
+                }
+                
+                document.getElementById('dispatch-all-btn').style.display = 'inline-block';
+
+                data.campaigns.forEach(camp => {
+                    const badgeClass = camp.risk_level === 'High Risk' ? 'red' : 'yellow';
+                    const card = document.createElement('div');
+                    card.className = 'campaign-card';
+                    card.innerHTML = `
+                        <div class="c-header">
+                            <div class="c-id"><i class='bx bx-user' style="margin-right:0.3rem;"></i>${escapeHTML(camp.customerID)}</div>
+                            <div class="c-badge ${badgeClass}">${escapeHTML(camp.risk_level)} (Score: ${escapeHTML(camp.risk_score)}%)</div>
+                        </div>
+                        <div class="c-reason">
+                            <i class='bx bx-target-lock' style="color:var(--text-color);"></i>
+                            Focus: ${DOMPurify.sanitize(camp.campaign_type)}
+                        </div>
+                        <div class="email-draft">
+                            <strong>Subj:</strong> ${DOMPurify.sanitize(camp.email_subject)}
+                            <div class="draft-body">${DOMPurify.sanitize(camp.email_body)}</div>
+                        </div>
+                        <div class="c-actions">
+                            <button class="btn btn-send" onclick="sendAction(this)" data-target-id="${escapeAttr(camp._id)}" data-subject="${escapeAttr(camp.email_subject)}" data-body="${escapeAttr(camp.email_body)}" data-email="${escapeAttr(camp.recipient_email || '')}" ${camp.recipient_email ? '' : 'disabled'}><i class='bx ${camp.recipient_email ? 'bx-send' : 'bx-copy'}'></i> ${camp.recipient_email ? 'Dispatch Email' : 'Draft Only'}</button>
+                            <button class="btn btn-skip" onclick="this.parentElement.parentElement.style.display='none'">Skip</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('campaign-grid').innerHTML = '<p style="color:var(--risk-red);">Failed to load campaigns.</p>';
+            }
+        }
+
+        async function sendAction(btn, target_id, subject, body, target_email) {
+            target_id = target_id || btn.dataset.targetId;
+            subject = subject || btn.dataset.subject || '';
+            body = body || btn.dataset.body || '';
+            target_email = target_email || btn.dataset.email || '';
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Sending...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${BASE_URL}/api/grow/send`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ target_id, subject, body, target_email })
+                });
+                
+                if (res.ok) {
+                    btn.innerHTML = '<i class="bx bx-check"></i> Email Sent Successfully';
+                    btn.style.background = 'var(--risk-green)';
+                    btn.style.color = '#fff';
+                    setTimeout(() => {
+                        btn.parentElement.parentElement.style.opacity = '0.5';
+                    }, 1000);
+                } else {
+                    throw new Error("Failed to send");
+                }
+            } catch (err) {
+                console.error(err);
+                btn.innerHTML = 'Error Sending';
+                btn.style.background = 'var(--risk-red)';
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.style.background = 'var(--text-color)';
+                    btn.disabled = false;
+                }, 3000);
+            }
+        }
+
+        async function dispatchAllNuke() {
+            if(!confirm("Are you sure you want to mass-dispatch all queued AI retention campaigns?")) return;
+            const btn = document.getElementById('dispatch-all-btn');
+            btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Dispatched. Check below for progress...';
+            btn.disabled = true;
+
+            const sendBtns = document.querySelectorAll('.btn-send');
+            Array.from(sendBtns).forEach(b => b.click());
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="bx bx-check-double"></i> Mass Campaign Dispatched';
+                btn.style.background = 'var(--risk-green)';
+            }, 1000);
+        }
+
+        loadCampaigns();
+    </script>
+</body>
+</html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRIP — Customer Retention Intelligence Portal</title>
+    <meta name="description" content="CRIP predicts which customers are about to leave — before they do. Upload any CSV, get AI-powered churn risk scores in under 60 seconds. Free for MSMEs and growing businesses.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <style>
+        /* ── Landing Page Specific ── */
+        .hero-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 4rem;
+            min-height: 88vh;
+            padding: 120px 5% 4rem;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(124,58,237,0.15);
+            border: 1px solid rgba(124,58,237,0.4);
+            border-radius: 50px;
+            padding: 0.35rem 1rem;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: #a78bfa;
+            margin-bottom: 1.25rem;
+            letter-spacing: 0.5px;
+        }
+        .hero-content h1 {
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 1.25rem;
+        }
+        .hero-content h1 .gradient-text {
+            background: linear-gradient(135deg, #7c3aed, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-desc {
+            font-size: 1.05rem;
+            color: var(--secondary-text);
+            line-height: 1.75;
+            margin-bottom: 2rem;
+            max-width: 520px;
+        }
+        .hero-desc strong { color: var(--text-color); }
+        .hero-ctas {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2.5rem;
+        }
+        .hero-cta-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #7c3aed, #4facfe);
+            color: #fff;
+            padding: 0.85rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .hero-cta-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+        .hero-cta-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: transparent;
+            color: var(--text-color);
+            padding: 0.85rem 1.8rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .hero-cta-secondary:hover { border-color: #7c3aed; transform: translateY(-2px); }
+        .trust-strip {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
+        .trust-item i { color: #22c55e; font-size: 1rem; }
+
+        /* Hero visual — dashboard mockup */
+        .hero-visual-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+            animation: floatUp 6s ease-in-out infinite;
+        }
+        @keyframes floatUp {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        .mockup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .mockup-stat-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .mockup-stat {
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+        }
+        .mockup-stat .val { font-size: 1.3rem; font-weight: 700; }
+        .mockup-stat .lbl { font-size: 0.65rem; color: var(--secondary-text); margin-top: 0.2rem; }
+        .mockup-bar-row { display: flex; flex-direction: column; gap: 0.5rem; }
+        .mockup-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.75rem;
+        }
+        .mockup-bar-item .id { color: var(--secondary-text); width: 70px; flex-shrink: 0; }
+        .mockup-bar-track { flex: 1; background: rgba(255,255,255,0.06); border-radius: 4px; height: 6px; overflow: hidden; }
+        .mockup-bar-fill { height: 100%; border-radius: 4px; transition: width 2s ease; }
+        .mockup-badge {
+            font-size: 0.6rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* Stats Row */
+        .stats-banner {
+            padding: 3rem 5%;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1px;
+            background: var(--border-color);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .stat-item {
+            background: var(--card-bg);
+            padding: 2rem 1.5rem;
+            text-align: center;
+        }
+        .stat-item .num { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.3rem; }
+        .stat-item .desc { font-size: 0.82rem; color: var(--secondary-text); }
+
+        /* Features */
+        .features-section {
+            padding: 4rem 5%;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .section-label {
+            text-align: center;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #7c3aed;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        .section-title {
+            text-align: center;
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.5px;
+        }
+        .section-sub {
+            text-align: center;
+            color: var(--secondary-text);
+            font-size: 0.95rem;
+            max-width: 560px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.75rem;
+            transition: border-color 0.25s, transform 0.25s;
+        }
+        .feature-card:hover {
+            border-color: rgba(124,58,237,0.5);
+            transform: translateY(-4px);
+        }
+        .feature-icon-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        .feature-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .feature-card p { font-size: 0.85rem; color: var(--secondary-text); line-height: 1.65; }
+
+        /* How it works */
+        .how-section {
+            padding: 4rem 5%;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        .step-card {
+            position: relative;
+            padding: 1.75rem;
+        }
+        .step-num {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #7c3aed20, #4facfe10);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+        .step-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; }
+        .step-card p { font-size: 0.82rem; color: var(--secondary-text); line-height: 1.65; }
+
+        /* CTA Banner */
+        .cta-banner {
+            padding: 4rem 5%;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .cta-banner-inner {
+            background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(79,172,254,0.1));
+            border: 1px solid rgba(124,58,237,0.3);
+            border-radius: 20px;
+            padding: 3.5rem;
+            text-align: center;
+        }
+        .cta-banner-inner h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 700; margin-bottom: 0.75rem; letter-spacing: -0.5px; }
+        .cta-banner-inner p { color: var(--secondary-text); margin-bottom: 2rem; font-size: 0.95rem; }
+
+        /* Footer */
+        .site-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 2.5rem 5%;
+        }
+        .footer-inner {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        .footer-brand { font-size: 0.85rem; color: var(--secondary-text); }
+        .footer-brand strong { color: var(--text-color); }
+        .footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+        .footer-links a { color: var(--secondary-text); text-decoration: none; font-size: 0.82rem; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--text-color); }
+        .footer-location { font-size: 0.78rem; color: var(--secondary-text); display: flex; align-items: center; gap: 0.4rem; }
+
+        @media (max-width: 768px) {
+            .hero-section { grid-template-columns: 1fr; gap: 2rem; min-height: auto; padding-top: 100px; }
+            .hero-visual-card { display: none; }
+            .footer-inner { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div id="vanta-bg"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-left">
+            <a href="getstarted.html" style="text-decoration:none;">
+                <div class="logo" style="display:flex; align-items:center;">
+                    <img src="logo.png" alt="CRIP" style="height: 38px;">
+                </div>
+            </a>
+        </div>
+        <div class="nav-center" style="display:flex; gap:2rem;">
+            <a href="getstarted.html" class="nav-link">Home</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </div>
+        <div class="nav-right">
+            <a href="signup.html" class="nav-link" style="margin-right:0.5rem;">Sign Up</a>
+            <a href="login.html" class="cta-btn" style="padding:0.5rem 1.2rem; font-size:0.9rem;">Log In</a>
+            <button class="theme-toggle" id="theme-toggle" title="Toggle Light/Dark Mode">
+                <i class='bx bx-moon'></i>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class='bx bx-brain'></i> AI-Powered Churn Intelligence · Free to Start
+                </div>
+                <h1>Know Which Customers
+                    Will Leave — <span class="gradient-text">Before They Do</span>
+                </h1>
+                <p class="hero-desc">
+                    CRIP (Customer Retention Intelligence Portal) analyzes your customer data and flags churn risk in under 60 seconds. <strong>No integrations. No consultants. Just upload your CSV.</strong>
+                </p>
+                <div class="hero-ctas">
+                    <a href="signup.html" class="hero-cta-primary">
+                        <i class='bx bx-rocket'></i> Start Free — No Card Required
+                    </a>
+                    <a href="login.html" class="hero-cta-secondary">
+                        <i class='bx bx-log-in'></i> Log In
+                    </a>
+                </div>
+                <div class="trust-strip">
+                    <div class="trust-item"><i class='bx bx-check-circle'></i> Works with any CSV format</div>
+                    <div class="trust-item"><i class='bx bx-check-circle'></i> No IT setup required</div>
+                    <div class="trust-item"><i class='bx bx-check-circle'></i> 100% free tier</div>
+                </div>
+            </div>
+
+            <!-- Animated Dashboard Mockup -->
+            <div>
+                <div class="hero-visual-card">
+                    <div class="mockup-header">
+                        <span style="font-size:0.85rem; font-weight:600;"><i class='bx bx-bar-chart-alt-2' style="color:#7c3aed; margin-right:0.4rem;"></i>Churn Intelligence Dashboard</span>
+                        <span style="font-size:0.7rem; color:var(--secondary-text);">Live · 7,043 customers</span>
+                    </div>
+                    <div class="mockup-stat-row">
+                        <div class="mockup-stat">
+                            <div class="val" style="color:#22c55e;">5,821</div>
+                            <div class="lbl">Safe</div>
+                        </div>
+                        <div class="mockup-stat">
+                            <div class="val" style="color:#f59e0b;">892</div>
+                            <div class="lbl">Warning</div>
+                        </div>
+                        <div class="mockup-stat">
+                            <div class="val" style="color:#ef4444;">330</div>
+                            <div class="lbl">High Risk</div>
+                        </div>
+                    </div>
+                    <div style="font-size:0.7rem; color:var(--secondary-text); margin-bottom:0.5rem;">Top At-Risk Accounts</div>
+                    <div class="mockup-bar-row">
+                        <div class="mockup-bar-item">
+                            <span class="id">CUST-7731</span>
+                            <div class="mockup-bar-track"><div class="mockup-bar-fill" style="width:91%;background:#ef4444;"></div></div>
+                            <span class="mockup-badge" style="background:rgba(239,68,68,0.15);color:#ef4444;">91%</span>
+                        </div>
+                        <div class="mockup-bar-item">
+                            <span class="id">CUST-4420</span>
+                            <div class="mockup-bar-track"><div class="mockup-bar-fill" style="width:83%;background:#ef4444;"></div></div>
+                            <span class="mockup-badge" style="background:rgba(239,68,68,0.15);color:#ef4444;">83%</span>
+                        </div>
+                        <div class="mockup-bar-item">
+                            <span class="id">CUST-2198</span>
+                            <div class="mockup-bar-track"><div class="mockup-bar-fill" style="width:67%;background:#f59e0b;"></div></div>
+                            <span class="mockup-badge" style="background:rgba(245,158,11,0.15);color:#f59e0b;">67%</span>
+                        </div>
+                        <div class="mockup-bar-item">
+                            <span class="id">CUST-0891</span>
+                            <div class="mockup-bar-track"><div class="mockup-bar-fill" style="width:54%;background:#f59e0b;"></div></div>
+                            <span class="mockup-badge" style="background:rgba(245,158,11,0.15);color:#f59e0b;">54%</span>
+                        </div>
+                    </div>
+                    <div style="margin-top:1rem; padding:0.75rem; background:rgba(124,58,237,0.08); border-radius:8px; border:1px solid rgba(124,58,237,0.2); font-size:0.72rem; color:#a78bfa;">
+                        <i class='bx bx-bot'></i> AI Insight: CUST-7731's Month-to-Month contract and 2-month tenure are the primary churn drivers (SHAP +0.41).
+                    </div>
+                </div>
+                <div style="text-align:center; margin-top:1rem; font-size:0.75rem; color:var(--secondary-text);">
+                    <i class='bx bx-info-circle'></i> Sample dashboard — your real data after upload
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Banner -->
+        <div class="stats-banner">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="num" style="background:linear-gradient(135deg,#7c3aed,#4facfe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">&lt; 60s</div>
+                    <div class="desc">Average time from CSV upload to first risk score</div>
+                </div>
+                <div class="stat-item">
+                    <div class="num" style="color:#22c55e;">Any CSV</div>
+                    <div class="desc">Works with any customer dataset — no template required</div>
+                </div>
+                <div class="stat-item">
+                    <div class="num" style="color:#4facfe;">SHAP XAI</div>
+                    <div class="desc">Per-customer explainability — know exactly why each customer is at risk</div>
+                </div>
+                <div class="stat-item">
+                    <div class="num" style="color:#f59e0b;">₹0</div>
+                    <div class="desc">Cost to get started — no credit card, no trial period limit</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="section-label">What CRIP Does</div>
+            <h2 class="section-title">Everything you need to stop losing customers</h2>
+            <p class="section-sub">Built for small and mid-size businesses that can't afford Gainsight or ChurnZero — but still need to know who's about to leave.</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon-wrap" style="background:rgba(124,58,237,0.12);">
+                        <i class='bx bx-upload' style="color:#7c3aed;"></i>
+                    </div>
+                    <h3>Upload Any CSV — Instant Analysis</h3>
+                    <p>No API keys. No integrations. Export your customer data from any CRM, ERP, or spreadsheet and upload it. CRIP auto-detects your columns and runs the ML engine immediately.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap" style="background:rgba(79,172,254,0.12);">
+                        <i class='bx bx-brain' style="color:#4facfe;"></i>
+                    </div>
+                    <h3>Risk Scores With Real Explanations</h3>
+                    <p>Every customer gets a churn probability score <em>and</em> a SHAP-based reason in plain language. Not "anomaly detected" — but "Month-to-month contract and 2-month tenure are driving this customer's 88% risk score."</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap" style="background:rgba(34,197,94,0.12);">
+                        <i class='bx bx-trending-up' style="color:#22c55e;"></i>
+                    </div>
+                    <h3>Customer Lifetime Value Prediction</h3>
+                    <p>See projected CLV per customer alongside risk score. Know not just <em>who</em> is leaving — know how much revenue is actually walking out the door, so you can prioritize retention spend.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap" style="background:rgba(245,158,11,0.12);">
+                        <i class='bx bx-heart' style="color:#f59e0b;"></i>
+                    </div>
+                    <h3>Health Score &amp; Cohort Analysis</h3>
+                    <p>A composite health score (0–100) per customer combining tenure, payment stability, and churn risk. Cohort charts show you which customer age group is churning fastest.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap" style="background:rgba(239,68,68,0.12);">
+                        <i class='bx bx-bell' style="color:#ef4444;"></i>
+                    </div>
+                    <h3>Proactive Alerts &amp; Weekly Digest</h3>
+                    <p>Get an email the moment any customer crosses your risk threshold. Every Monday, receive a full weekly digest with revenue-at-risk, health averages, and the top 3 accounts to call this week.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap" style="background:rgba(124,58,237,0.12);">
+                        <i class='bx bx-bot' style="color:#7c3aed;"></i>
+                    </div>
+                    <h3>AI Campaign Generator</h3>
+                    <p>Select your at-risk customers and let CRIP generate personalized retention emails powered by Gemini AI. A/B test variants automatically and track which message actually retained the customer.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="how-section">
+            <div class="section-label">How It Works</div>
+            <h2 class="section-title">From spreadsheet to retention strategy in 4 steps</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-num">01</div>
+                    <h3>Upload Your Data</h3>
+                    <p>Export customers from any tool as a CSV. Paste a Google Sheets link. Or add records manually. CRIP accepts any structure — no column mapping required.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">02</div>
+                    <h3>AI Runs in Seconds</h3>
+                    <p>Our hybrid ML engine (Random Forest + Isolation Forest) scores every customer for churn probability. SHAP values explain the top reasons per customer in plain English.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">03</div>
+                    <h3>See Who's At Risk</h3>
+                    <p>Your dashboard instantly shows risk distribution, revenue at stake, health scores, and contract renewal calendar — sorted by urgency so you know where to look first.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">04</div>
+                    <h3>Act Fast</h3>
+                    <p>Generate a personalized retention email, run a What-If simulation to test a discount offer, or set an automated alert so your team never misses a high-risk account.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Who It's For -->
+        <section class="features-section" style="padding-top:0;">
+            <div class="section-label">Industries</div>
+            <h2 class="section-title">Built for any business that tracks customers</h2>
+            <p class="section-sub">If you have customer data in a spreadsheet and you want to know who's about to stop paying you — CRIP is for you.</p>
+            <div style="display:flex; flex-wrap:wrap; gap:0.75rem; justify-content:center;">
+                <span style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:50px; padding:0.4rem 1.1rem; font-size:0.82rem;">SaaS & Technology</span>
+                <span style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:50px; padding:0.4rem 1.1rem; font-size:0.82rem;">Retail & E-Commerce</span>
+                <span style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:50px; padding:0.4rem 1.1rem; font-size:0.82rem;">Financial Services</span>
+                <span style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:50px; padding:0.4rem 1.1rem; font-size:0.82rem;">Healthcare & Clinics</span>
+                <span style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:50px; padding:0.4rem 1.1rem; font-size:0.82rem;">Telecommunications</span>
+                <span style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:50px; padding:0.4rem 1.1rem; font-size:0.82rem;">EdTech & Coaching</span>
+                <span style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:50px; padding:0.4rem 1.1rem; font-size:0.82rem;">Logistics & Delivery</span>
+                <span style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:50px; padding:0.4rem 1.1rem; font-size:0.82rem;">Insurance</span>
+                <span style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:50px; padding:0.4rem 1.1rem; font-size:0.82rem;">Hospitality</span>
+                <span style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:50px; padding:0.4rem 1.1rem; font-size:0.82rem;">Manufacturing</span>
+                <span style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:50px; padding:0.4rem 1.1rem; font-size:0.82rem;">Agriculture & AgriTech</span>
+                <span style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:50px; padding:0.4rem 1.1rem; font-size:0.82rem;">Any MSME with customer data</span>
+            </div>
+        </section>
+
+        <!-- CTA Banner -->
+        <div class="cta-banner">
+            <div class="cta-banner-inner">
+                <h2>Start understanding your customers today</h2>
+                <p>Free to use. No credit card. No integration. Just your CSV and 60 seconds.</p>
+                <a href="signup.html" class="hero-cta-primary" style="display:inline-flex;">
+                    <i class='bx bx-rocket'></i> Create Free Account
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <strong>CRIP</strong> — Customer Retention Intelligence Portal<br>
+                <span style="font-size:0.75rem;">Built at MGIT, Hyderabad</span>
+            </div>
+            <div class="footer-links">
+                <a href="getstarted.html">Home</a>
+                <a href="contact.html">Contact</a>
+                <a href="signup.html">Sign Up</a>
+                <a href="login.html">Log In</a>
+                <a href="terms.html">Terms</a>
+            </div>
+            <div class="footer-location">
+                <i class='bx bx-map'></i> MGIT, Gandipet, Hyderabad, Telangana
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

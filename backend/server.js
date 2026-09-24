@@ -54,6 +54,7 @@ app.set('io', io);
 // ─────────────────────────────────────────────
 // Rate Limiter Setup
 // ─────────────────────────────────────────────
+app.set('trust proxy', 1); // Trust the first proxy (Render)
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 mins
     max: 20, // 20 requests

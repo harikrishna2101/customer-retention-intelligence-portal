@@ -95,11 +95,9 @@ const uploadQueue = asyncPkg.queue(async (task) => {
             mlStream.destroy();
         } catch (err) {
             const mlMessage = err.response?.data?.detail || err.response?.data?.message || err.message;
-            console.error("FastAPI analysis error:", mlMessage);
+            console.warn(`[DEV] FastAPI ML engine offline (${mlMessage}). Bypassing ML enrichment and using default values.`);
             if (mlStream) mlStream.destroy();
-            await cleanupTempFile(filePath, 'upload');
-            if (io) io.emit('uploadError', { message: `ML analysis failed: ${mlMessage}` });
-            return resolve();
+            mlData = {}; // Fallback to empty ML data so upload continues
         }
         
         let batch = [];

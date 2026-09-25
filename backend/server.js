@@ -93,15 +93,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(mongoSanitize());
 
-// CSRF token endpoint — returns empty token (CSRF disabled for local demo)
+// CSRF token endpoint
 app.get('/api/csrf-token', (req, res) => {
     return res.json({ csrfToken: generateCsrfToken(req, res) });
 });
-
-// Keep local demos frictionless while enforcing CSRF in production.
-if (isProduction) {
-  app.use(doubleCsrfProtection);
-}
 
 // CORS — allow both localhost and 127.0.0.1 on any Live Server port
 app.use(cors({
@@ -125,6 +120,12 @@ app.use('/api/auth/forgot-password', authLimiter);
 app.use('/api/auth/reset-password', authLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/contact', contactRoutes);
+
+// Apply CSRF protection only to authenticated endpoints
+if (isProduction) {
+  app.use(doubleCsrfProtection);
+}
+
 app.use('/api/data', dataRoutes);
 app.use('/api/grow', growRoutes);
 

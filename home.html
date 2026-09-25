@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 
 <head>
@@ -723,6 +723,16 @@
     <script>
         var BASE_URL = "";
 
+        async function getCsrfToken() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/csrf-token`, { credentials: 'include' });
+                const data = await res.json();
+                return data.csrfToken || '';
+            } catch (e) {
+                return '';
+            }
+        }
+
         async function verifySession() {
             try {
                 const res = await fetch(`${BASE_URL}/api/auth/verify-session`, {
@@ -742,7 +752,12 @@
 
         async function handleSignOut() {
             try {
-                await fetch(`${BASE_URL}/api/auth/logout`, { method: "POST", credentials: "include" });
+                const csrfToken = await getCsrfToken();
+        await fetch(`${BASE_URL}/api/auth/logout`, { 
+            method: "POST", 
+            headers: { 'x-csrf-token': csrfToken },
+            credentials: "include" 
+        });
             } catch (e) {}
             window.location.href = "login.html";
         }
@@ -1289,9 +1304,11 @@
             try {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
+                const csrfToken = await getCsrfToken();
                 const res = await fetch(`${BASE_URL}/api/data/upload`, { 
                     method: 'POST', 
                     body: formData, 
+                    headers: { 'x-csrf-token': csrfToken },
                     credentials: 'include' 
                 });
                 const data = await res.json();
@@ -1369,9 +1386,10 @@
         }
 
         async function finishOnboarding() {
+            const csrfToken = await getCsrfToken();
             await fetch(`${BASE_URL}/api/data/me`, {
                 method: 'PUT', credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
                 body: JSON.stringify({ onboardingCompleted: true })
             });
             document.getElementById('onboarding-modal').style.display = 'none';
@@ -1413,9 +1431,10 @@
             btn.disabled = true;
 
             try {
+                const csrfToken = await getCsrfToken();
                 const res = await fetch(`${BASE_URL}/api/data/import-sheets`, {
                     method: 'POST', credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken },
                     body: JSON.stringify({ sheetsUrl: url })
                 });
                 const data = await res.json();

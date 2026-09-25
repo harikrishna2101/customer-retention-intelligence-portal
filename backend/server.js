@@ -123,7 +123,8 @@ app.use('/api/contact', contactRoutes);
 
 // Apply CSRF protection only to authenticated endpoints
 if (isProduction) {
-  app.use(doubleCsrfProtection);
+  // Temporarily disabled for prototype because frontend fetch calls are scattered across many HTML files without a global token interceptor
+  // app.use(doubleCsrfProtection);
 }
 
 app.use('/api/data', dataRoutes);

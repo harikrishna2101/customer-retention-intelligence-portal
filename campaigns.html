@@ -363,7 +363,7 @@
                         <strong>Subj:</strong> ${escapeHTML(c.email_subject)}<br/><br/>
                         <span style="color:var(--secondary-text);white-space:pre-wrap;">${escapeHTML(String(c.email_body || '').substring(0, 100))}...</span>
                     </div>
-                    <button class="btn-send-ai" onclick="sendAiEmail(this)" data-target-id="${escapeAttr(c._id)}" data-subject="${escapeAttr(c.email_subject)}" data-body="${escapeAttr(c.email_body)}" data-email="${escapeAttr(c.recipient_email || '')}" ${c.recipient_email ? '' : 'disabled'} style="width:100%;padding:0.5rem;border-radius:6px;border:none;background:${c.recipient_email ? 'var(--text-color)' : 'var(--hover-bg)'};color:${c.recipient_email ? 'var(--bg-color)' : 'var(--secondary-text)'};cursor:${c.recipient_email ? 'pointer' : 'not-allowed'};font-family:'Poppins',sans-serif;font-size:0.75rem;font-weight:600;"><i class="bx ${c.recipient_email ? 'bx-send' : 'bx-copy'}"></i> ${c.recipient_email ? 'Dispatch Email' : 'Draft Only - No Email'}</button>
+                    <button class="btn-send-ai" onclick="sendAiEmail(this)" data-target-id="${escapeAttr(c._id)}" data-subject="${escapeAttr(c.email_subject)}" data-body="${escapeAttr(c.email_body)}" data-email="${escapeAttr(c.recipient_email || '')}" style="width:100%;padding:0.5rem;border-radius:6px;border:none;background:${c.recipient_email ? 'var(--text-color)' : 'var(--hover-bg)'};color:${c.recipient_email ? 'var(--bg-color)' : 'var(--primary-text)'};cursor:pointer;font-family:'Poppins',sans-serif;font-size:0.75rem;font-weight:600;"><i class="bx ${c.recipient_email ? 'bx-send' : 'bx-copy'}"></i> ${c.recipient_email ? 'Dispatch Email' : 'Copy Draft'}</button>
                 </div>
             `).join('');
         } catch(e) { document.getElementById('aiEmailGrid').innerHTML = '<p style="color:var(--risk-red);">Failed to load.</p>'; }
@@ -374,6 +374,22 @@
         subject = subject || btn.dataset.subject || '';
         body = body || btn.dataset.body || '';
         target_email = target_email || btn.dataset.email || '';
+
+        if (!target_email) {
+            const textToCopy = `Subject: ${subject}\n\n${body}`;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                btn.innerHTML = '<i class="bx bx-check"></i> Copied!';
+                btn.style.background = 'var(--risk-green)';
+                btn.style.color = '#fff';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="bx bx-copy"></i> Copy Draft';
+                    btn.style.background = 'var(--hover-bg)';
+                    btn.style.color = 'var(--primary-text)';
+                }, 2000);
+            });
+            return;
+        }
+
         const orig = btn.innerHTML;
         btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Sending...';
         btn.disabled = true;

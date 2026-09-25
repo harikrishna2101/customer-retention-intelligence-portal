@@ -64,7 +64,7 @@ const authLimiter = rateLimit({
 
 const { doubleCsrfProtection, generateCsrfToken } = doubleCsrf({
   getSecret: () => process.env.CSRF_SECRET || process.env.JWT_SECRET,
-  getSessionIdentifier: (req) => req.cookies['crip-token'] || req.ip || req.headers['user-agent'] || 'anonymous',
+  getSessionIdentifier: (req) => req.cookies['crip-token'] || 'anonymous',
   cookieName: isProduction ? '__Host-crip.csrf-token' : 'crip.csrf-token',
   cookieOptions: {
     sameSite: 'lax',
@@ -133,6 +133,16 @@ app.use('/api/grow', growRoutes);
 // ─────────────────────────────────────────────
 app.get('*', (req, res) => {
   res.status(404).sendFile(path.join(__dirname, '..', '404.html'));
+});
+
+// ─────────────────────────────────────────────
+// Error Handler
+// ─────────────────────────────────────────────
+app.use((err, req, res, next) => {
+  if (err.code === 'EBADCSRFTOKEN' || err.message === 'invalid csrf token') {
+    return res.status(403).json({ success: false, message: 'Invalid CSRF token. Please refresh the page and try again.' });
+  }
+  next(err);
 });
 
 // ─────────────────────────────────────────────

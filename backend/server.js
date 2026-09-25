@@ -34,6 +34,7 @@ const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5000,http:
 
 function isAllowedOrigin(origin) {
   if (!origin) return true;
+  if (origin.includes('onrender.com')) return true;
   return allowedOrigins.includes(origin);
 }
 

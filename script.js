@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = "otp.html";
                 }
             } catch (err) {
-                alert("Cannot reach server. Make sure backend is running on port 5000.");
+                alert("Cannot reach server. Please try again later.");
                 console.error(err);
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = "Verify Credentials & Request OTP <i class='bx bx-lock-open-alt'></i>";
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = "home.html";
                 }
             } catch (err) {
-                alert("Cannot reach server. Make sure backend is running on port 5000.");
+                alert("Cannot reach server. Please try again later.");
                 console.error(err);
             }
         });
@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = "login.html";
                 }
             } catch (err) {
-                alert("Cannot reach server. Make sure backend is running on port 5000.");
+                alert("Cannot reach server. Please try again later.");
                 console.error(err);
             }
         });
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("Message sent successfully!");
                 contactForm.reset();
             } catch (err) {
-                alert("Cannot reach server. Make sure backend is running on port 5000.");
+                alert("Cannot reach server. Please try again later.");
                 console.error(err);
             }
         });
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert(data.message || "Something went wrong.");
                 }
             } catch (err) {
-                alert("Cannot reach server. Make sure backend is running on port 5000.");
+                alert("Cannot reach server. Please try again later.");
                 console.error(err);
             }
         });
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     alert("OTP re-sent! Check your inbox and Spam folder.");
                 } catch (err) {
-                    alert("Cannot reach server. Make sure backend is running on port 5000.");
+                    alert("Cannot reach server. Please try again later.");
                     console.error(err);
                 } finally {
                     resendOtpBtn.disabled = false;
@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = "login.html";
                 }
             } catch (err) {
-                alert("Cannot reach server. Make sure backend is running on port 5000.");
+                alert("Cannot reach server. Please try again later.");
                 console.error(err);
             }
         });

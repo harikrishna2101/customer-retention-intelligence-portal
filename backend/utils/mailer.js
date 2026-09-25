@@ -11,12 +11,14 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_APP_PASSWORD,
     },
+    connectionTimeout: 5000, // Fail fast (5s) instead of hanging if Render blocks port 465
 });
 
 // Verify transporter connection on startup
 transporter.verify((err, success) => {
     if (err) {
         console.error('[MAILER] Gmail connection FAILED:', err.code, '-', err.message);
+        console.warn('[MAILER] If you are on Render Free Tier, SMTP ports are blocked. OTPs will be printed to console.');
     } else {
         console.log('[MAILER] Gmail connection verified. Ready to send emails.');
     }
@@ -59,6 +61,7 @@ const sendOTP = async (toEmail, otpCode) => {
         console.error(`[MAILER] Error Code   : ${err.code}`);
         console.error(`[MAILER] Error Message: ${err.message}`);
         console.error(`[MAILER] SMTP Response: ${err.response || 'N/A'}`);
+        console.log(`\n=========================================\n[DEV FALLBACK] OTP for ${toEmail}: ${otpCode}\n=========================================\n`);
         return false;
     }
 };
